@@ -22,7 +22,7 @@ export function WhatWeDoShell({
             {title}
           </h1>
           {description ? (
-            <p className="text-muted-foreground dark:text-foreground/90 max-w-3xl text-base leading-relaxed">
+            <p className="text-muted-foreground max-w-3xl text-base leading-relaxed">
               {description}
             </p>
           ) : null}
@@ -36,4 +36,3 @@ export function WhatWeDoShell({
     </main>
   )
 }
-

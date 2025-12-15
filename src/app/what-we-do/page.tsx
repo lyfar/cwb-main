@@ -76,7 +76,7 @@ export default function WhatWeDoPage() {
             <ShieldCheck className="text-primary size-6" />
             <CardTitle className="text-base">Risk management</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             <ul className="list-disc pl-5">
               <li>
                 Segregated accounts for client money (cash) with a Hong Kong
@@ -107,7 +107,7 @@ export default function WhatWeDoPage() {
             <Coins className="text-primary size-6" />
             <CardTitle className="text-base">Account opening process</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             <ol className="list-decimal space-y-2 pl-5">
               <li>Client opens an account with CWB Hong Kong Limited.</li>
               <li>
@@ -127,7 +127,7 @@ export default function WhatWeDoPage() {
           <CardHeader>
             <CardTitle className="text-base">Account operations</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             Our global team supports execution and real-time operations. Clients
             may reach us via email, recorded phone line, or Bloomberg chat for
             trade instructions, settlements, and cross-border transfers.

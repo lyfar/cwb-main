@@ -22,7 +22,7 @@ export default function BankingServicesPage() {
             <PaperPlaneTilt className="text-primary size-6" />
             <CardTitle className="text-base">Payments</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             Streamlined payment services for personal, business, or corporate
             purposes across major currencies.
           </CardContent>
@@ -33,7 +33,7 @@ export default function BankingServicesPage() {
             <CurrencyCircleDollar className="text-primary size-6" />
             <CardTitle className="text-base">Multi-currency handling</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             Support for multi-currency cash management and account operations,
             with reporting aligned to client needs.
           </CardContent>
@@ -44,7 +44,7 @@ export default function BankingServicesPage() {
             <Bank className="text-primary size-6" />
             <CardTitle className="text-base">Account operations</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             Account operations are supported by controlled instruction
             workflows. Reach the team for settlement, transfers, or onboarding
             support.
@@ -54,4 +54,3 @@ export default function BankingServicesPage() {
     </WhatWeDoShell>
   )
 }
-
