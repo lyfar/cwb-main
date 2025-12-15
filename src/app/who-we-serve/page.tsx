@@ -42,7 +42,7 @@ export default function WhoWeServePage() {
             <UsersThreeIcon className="text-primary size-6" />
             <CardTitle className="text-base">Institutions</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 space-y-2 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground space-y-2 text-sm leading-relaxed">
             <div>
               For organisations that need robust operational controls and
               scalable access to global markets.
@@ -63,7 +63,7 @@ export default function WhoWeServePage() {
             <UserCircleGearIcon className="text-primary size-6" />
             <CardTitle className="text-base">Private clients</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 space-y-2 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground space-y-2 text-sm leading-relaxed">
             <div>
               For individuals and families seeking a private banking–style
               experience with institutional-grade safeguards.
@@ -84,7 +84,7 @@ export default function WhoWeServePage() {
             <BriefcaseIcon className="text-primary size-6" />
             <CardTitle className="text-base">Family offices</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 space-y-2 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground space-y-2 text-sm leading-relaxed">
             <div>
               For teams coordinating multi-account oversight, governance, and
               access to opportunities across markets.
@@ -105,7 +105,7 @@ export default function WhoWeServePage() {
             <GlobeHemisphereWestIcon className="text-primary size-6" />
             <CardTitle className="text-base">Worldwide reach</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             Our custody and execution network is designed to support clients
             across major global markets, with strong coverage of APAC and
             emerging market opportunities.

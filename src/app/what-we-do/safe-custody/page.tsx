@@ -26,7 +26,7 @@ export default function SafeCustodyPage() {
             <Vault className="text-primary size-6" />
             <CardTitle className="text-base">Segregated safekeeping</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             Client securities and collateral are held in segregated accounts at
             custodians, designed to keep assets ring-fenced and transparent.
           </CardContent>
@@ -37,7 +37,7 @@ export default function SafeCustodyPage() {
             <ShieldCheck className="text-primary size-6" />
             <CardTitle className="text-base">Operational controls</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             Daily reconciliation, segregation checks, and controlled workflows
             for settlements, corporate actions, and reporting.
           </CardContent>
@@ -51,7 +51,7 @@ export default function SafeCustodyPage() {
         <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
           Custody network (examples)
         </h2>
-        <p className="text-muted-foreground dark:text-foreground/90 max-w-3xl text-sm leading-relaxed">
+        <p className="text-muted-foreground max-w-3xl text-sm leading-relaxed">
           Logos shown are examples of custody counterparties. We only present
           verified partners.
         </p>
@@ -72,4 +72,3 @@ export default function SafeCustodyPage() {
     </WhatWeDoShell>
   )
 }
-

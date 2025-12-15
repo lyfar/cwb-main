@@ -30,7 +30,7 @@ export default function ContactsPage() {
         <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
           Contacts
         </h1>
-        <p className="text-muted-foreground dark:text-foreground/90 max-w-3xl text-base leading-relaxed">
+        <p className="text-muted-foreground max-w-3xl text-base leading-relaxed">
           Reach us for account operations, trade instructions, or general
           enquiries.
         </p>

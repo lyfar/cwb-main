@@ -79,7 +79,7 @@ export function SiteHeader() {
           </Link>
         </div>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-1 dark:text-foreground/90 md:flex">
           <HeaderNavLink href="/who-we-are" label="Who we are" />
           <WhoWeServeMenu
             mode="label"

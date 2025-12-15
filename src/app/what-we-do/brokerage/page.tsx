@@ -26,7 +26,7 @@ export default function BrokeragePage() {
             <ArrowsLeftRight className="text-primary size-6" />
             <CardTitle className="text-base">Execution</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             Seamless execution across exchanges and liquidity venues, supported
             by controlled instruction workflows.
           </CardContent>
@@ -37,7 +37,7 @@ export default function BrokeragePage() {
             <GlobeHemisphereWest className="text-primary size-6" />
             <CardTitle className="text-base">Coverage</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             Developed markets with strong APAC focus, plus access routes for
             regional and emerging market opportunities.
           </CardContent>
@@ -51,7 +51,7 @@ export default function BrokeragePage() {
         <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
           Brokerage & execution (examples)
         </h2>
-        <p className="text-muted-foreground dark:text-foreground/90 max-w-3xl text-sm leading-relaxed">
+        <p className="text-muted-foreground max-w-3xl text-sm leading-relaxed">
           Logos shown are examples of execution and access counterparties. We
           only present verified partners.
         </p>
@@ -72,4 +72,3 @@ export default function BrokeragePage() {
     </WhatWeDoShell>
   )
 }
-

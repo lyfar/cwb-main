@@ -22,7 +22,7 @@ export default function AssetManagementPage() {
             <Compass className="text-primary size-6" />
             <CardTitle className="text-base">Open architecture</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             Access a broad universe of strategies across markets and managers,
             with the flexibility to adapt allocations as conditions change.
           </CardContent>
@@ -33,7 +33,7 @@ export default function AssetManagementPage() {
             <ChartLineUp className="text-primary size-6" />
             <CardTitle className="text-base">Portfolio construction</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             Guidance across strategic allocation, diversification, and ongoing
             monitoring — aligned to liquidity, horizon, and risk preferences.
           </CardContent>
@@ -43,7 +43,7 @@ export default function AssetManagementPage() {
           <CardHeader>
             <CardTitle className="text-base">Investment universe</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
+          <CardContent className="text-muted-foreground text-sm leading-relaxed">
             <ul className="list-disc space-y-2 pl-5">
               <li>Public or privately subscribed funds</li>
               <li>IPOs / pre-IPO opportunities</li>
@@ -57,4 +57,3 @@ export default function AssetManagementPage() {
     </WhatWeDoShell>
   )
 }
-
