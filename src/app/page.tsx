@@ -1,65 +1,113 @@
-import Image from "next/image";
+import Link from "next/link"
+import {
+  ArrowsLeftRight as ArrowsLeftRightIcon,
+  Bank as BankIcon,
+  ChartLineUp as ChartLineUpIcon,
+  Vault as VaultIcon,
+} from "@phosphor-icons/react/dist/ssr"
 
-export default function Home() {
+import Hero from "@/components/ui/hero"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+
+const capabilities = [
+  {
+    title: "Safe custody",
+    description: "Secure, segregated safekeeping with top-tier global partners.",
+    href: "/what-we-do",
+    icon: VaultIcon,
+  },
+  {
+    title: "Asset management",
+    description: "Open-architecture access to public and private opportunities.",
+    href: "/what-we-do",
+    icon: ChartLineUpIcon,
+  },
+  {
+    title: "Brokerage",
+    description: "Global execution with APAC and emerging market coverage.",
+    href: "/what-we-do",
+    icon: ArrowsLeftRightIcon,
+  },
+  {
+    title: "Banking services",
+    description: "Streamlined payments across major currencies.",
+    href: "/what-we-do",
+    icon: BankIcon,
+  },
+] as const
+
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main>
+      <Hero />
+
+      <section className="mx-auto w-full max-w-6xl px-6 py-14 md:py-16">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div className="space-y-2">
+            <Badge variant="outline">Our capabilities</Badge>
+            <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+              Institutional-grade custody. Personalised guidance.
+            </h2>
+            <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
+              Safe custody, brokerage, asset management, and banking services —
+              designed for institutional and private clients.
+            </p>
+          </div>
+          <Button asChild variant="outline">
+            <Link href="/what-we-do">Explore what we do</Link>
+          </Button>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <Separator className="my-10" />
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {capabilities.map((capability) => (
+            <Card key={capability.title} variant="glass" className="group">
+              <CardHeader className="flex-row items-center gap-3 space-y-0">
+                <capability.icon className="text-primary size-6" />
+                <CardTitle className="text-base">{capability.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-muted-foreground text-sm leading-relaxed">
+                {capability.description}
+                <div className="mt-4">
+                  <Button asChild variant="ghost" className="px-0">
+                    <Link href={capability.href}>Learn more</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </main>
-    </div>
-  );
+
+        <Separator className="my-10" />
+
+        <Card variant="glass">
+          <CardHeader>
+            <CardTitle className="text-base">Built on trust</CardTitle>
+          </CardHeader>
+          <CardContent className="text-muted-foreground grid gap-3 text-sm leading-relaxed md:grid-cols-2">
+            <div>
+              We maintain segregated custody arrangements and robust operational
+              controls to keep client assets ring-fenced.
+            </div>
+            <div>
+              Ready to talk? Reach our team for onboarding, custody, or trading
+              support.
+            </div>
+            <div className="flex flex-col gap-2 md:col-span-2 md:flex-row">
+              <Button asChild>
+                <Link href="/contacts">Get in touch</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/who-we-are">Who we are</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    </main>
+  )
 }

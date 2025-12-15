@@ -1,0 +1,835 @@
+@import url('https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap');
+
+:root {
+  --brand-peach: #fad2ad;
+  --brand-cloud: #a8bacf;
+  --brand-sky: #86aedd;
+  --brand-gradient: linear-gradient(120deg, #fad2ad 0%, #a8bacf 45%, #86aedd 100%);
+  --brand-gradient-soft: linear-gradient(135deg, #fff8f1 0%, #f4f7fc 100%);
+  --brand-gradient-vertical: linear-gradient(180deg, #fad2ad 0%, #a8bacf 50%, #86aedd 100%);
+  --brand-shadow: 0 16px 55px rgba(134, 174, 221, 0.35);
+  --font-heading: 'General Sans', 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-body: 'General Sans', 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-heading-weight: 600;
+  --font-body-weight: 400;
+}
+
+::selection {
+  background: rgba(134, 174, 221, 0.35);
+  color: #0f172a;
+}
+
+body {
+  background: var(--brand-gradient-soft);
+  color: #0f172a;
+  font-family: var(--font-body);
+  font-weight: var(--font-body-weight);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  letter-spacing: -0.01em;
+}
+
+/* ========================================
+   FULL-SCREEN LANDING PAGE
+   ======================================== */
+.landing-page {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.landing-page__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.landing-page__mesh {
+  position: absolute !important;
+  inset: -15% !important;
+  width: 130% !important;
+  height: 130% !important;
+  filter: saturate(1.1) brightness(1.05);
+}
+
+.landing-page__mesh--overlay {
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+}
+
+.landing-page__noise {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.08), transparent 60%);
+  pointer-events: none;
+}
+
+.landing-page__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 720px;
+  padding: 2rem;
+}
+
+.landing-page__logo {
+  height: 64px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+}
+
+.landing-page__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1.5rem;
+}
+
+.landing-page__badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #86aedd;
+  box-shadow: 0 0 12px rgba(134, 174, 221, 0.8);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+.landing-page__title {
+  margin: 0;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.landing-page__subtitle {
+  margin: 1.5rem 0 0 0;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-family: var(--font-body);
+  font-weight: var(--font-body-weight);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 580px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.landing-page__subtitle strong {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: rgba(250, 210, 173, 0.6);
+  text-underline-offset: 4px;
+}
+
+.landing-page__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.landing-page__meta-dot {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.landing-page__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+  padding: 0.9rem 2.5rem;
+  border-radius: 999px;
+  background: #fff;
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.landing-page__cta:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: #f8fafc;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+.landing-page__cta:active {
+  transform: translateY(0) scale(1);
+}
+
+.landing-page__cta svg {
+  transition: transform 0.2s ease;
+}
+
+.landing-page__cta:hover svg {
+  transform: translateX(4px);
+}
+
+.landing-page__footer {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .landing-page__content {
+    padding: 1.5rem;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 8rem; /* Space for fixed button */
+  }
+  
+  .landing-page__title {
+    font-size: clamp(2.5rem, 10vw, 3.5rem);
+  }
+  
+  .landing-page__subtitle {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.95);
+  }
+  
+  .landing-page__cta {
+    position: fixed;
+    bottom: 2.5rem;
+    left: 1.5rem;
+    right: 1.5rem;
+    width: auto;
+    margin: 0;
+    padding: 1rem;
+    z-index: 100;
+    background: #fff;
+    color: #0f172a;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  
+  .landing-page__footer {
+    bottom: 1rem;
+    font-size: 0.7rem;
+    opacity: 0.5;
+    display: none; /* Hide footer on mobile to avoid clutter near button */
+  }
+}
+
+/* Legacy landing shell (kept for compatibility) */
+.landing-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 2.5rem;
+}
+
+html.dark body {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(250, 210, 173, 0.08), transparent 28%),
+    radial-gradient(circle at 82% 18%, rgba(134, 174, 221, 0.09), transparent 32%),
+    linear-gradient(135deg, #0f172a 0%, #0b1425 100%);
+  color: #e8edf5;
+}
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #0f172a;
+}
+
+html.dark .brand-logo {
+  color: #fff;
+}
+
+
+/* Landing hero */
+.case-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  padding: clamp(1.75rem, 3vw, 3rem);
+  min-height: 420px;
+  display: grid;
+  align-items: center;
+  margin: 0 0 2.5rem 0;
+  border: 1px solid rgba(134, 174, 221, 0.35);
+  box-shadow: 0 20px 55px rgba(134, 174, 221, 0.18);
+  background: radial-gradient(circle at 20% 20%, rgba(250, 210, 173, 0.35), rgba(134, 174, 221, 0.18)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(134, 174, 221, 0.08));
+  isolation: isolate;
+}
+
+.case-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.case-hero__mesh {
+  position: absolute !important;
+  inset: -10% !important;
+  width: 120% !important;
+  height: 120% !important;
+  filter: saturate(1.05);
+}
+
+.case-hero__mesh canvas {
+  border-radius: 18px;
+}
+
+.case-hero__mesh--overlay {
+  opacity: 0.35;
+  mix-blend-mode: screen;
+}
+
+.case-hero__blur {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 70% 30%, rgba(134, 174, 221, 0.2), transparent 40%),
+    radial-gradient(circle at 30% 80%, rgba(250, 210, 173, 0.18), transparent 35%);
+  backdrop-filter: blur(12px);
+  opacity: 0.9;
+}
+
+.case-hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  color: #0f172a;
+}
+
+.case-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(134, 174, 221, 0.4);
+  box-shadow: 0 8px 24px rgba(134, 174, 221, 0.18);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #2f6fb5;
+}
+
+.case-hero__content h1 {
+  margin: 0.6rem 0 0.4rem 0;
+  font-size: clamp(2.1rem, 3.4vw, 3rem);
+  line-height: 1.1;
+  color: #0f172a;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.case-hero__lead {
+  margin: 0.2rem 0 1.2rem 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #1f2a3e;
+  max-width: 36rem;
+}
+
+.case-hero__cta-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.case-hero__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(47, 111, 181, 0.2);
+  background: linear-gradient(120deg, #fad2ad, #86aedd);
+  color: #0f172a;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  box-shadow: 0 12px 30px rgba(134, 174, 221, 0.35);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.2s ease;
+}
+
+.case-hero__cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(134, 174, 221, 0.4);
+  opacity: 0.95;
+}
+
+.case-hero__cta:active {
+  transform: translateY(0);
+}
+
+.case-hero__cta-note {
+  color: #2f3c53;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .case-hero {
+    padding: 1.4rem;
+    min-height: 460px;
+  }
+
+  .case-hero__content h1 {
+    font-size: 2rem;
+  }
+
+  .case-hero__cta {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Force Mobile Menu Light Theme */
+@media (max-width: 1023px) {
+  /* Mobile menu container */
+  .nextra-sidebar-container,
+  [class*="nextra-sidebar"],
+  aside {
+    background: #ffffff !important;
+    z-index: 50 !important;
+  }
+  
+  /* Overlay behind menu */
+  [class*="fixed"][class*="inset"] {
+    z-index: 40 !important;
+  }
+  
+  /* All text in mobile nav must be dark */
+  .nextra-sidebar-container *,
+  aside * {
+    color: #1e293b !important;
+  }
+  
+  /* Links hover */
+  .nextra-sidebar-container a:hover,
+  aside a:hover {
+    background: rgba(134, 174, 221, 0.12) !important;
+    border-radius: 6px;
+  }
+  
+  /* Active page link */
+  .nextra-sidebar-container a[aria-current="page"],
+  aside a[aria-current="page"] {
+    background: rgba(134, 174, 221, 0.18) !important;
+    color: #1e40af !important;
+    font-weight: 600 !important;
+    border-radius: 8px;
+  }
+}
+
+.nextra-nav-container-blur {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  background-image: none;
+  box-shadow: 0 2px 10px rgba(134, 174, 221, 0.1);
+  border-bottom: 1px solid rgba(134, 174, 221, 0.2);
+}
+
+html.dark .nextra-nav-container-blur {
+  background-color: rgba(11, 20, 37, 0.6);
+  backdrop-filter: blur(12px);
+  background-image: linear-gradient(
+    120deg,
+    rgba(250, 210, 173, 0.12) 0%,
+    rgba(168, 186, 207, 0.16) 45%,
+    rgba(134, 174, 221, 0.2) 100%
+  );
+  border-bottom: 1px solid rgba(134, 174, 221, 0.25);
+}
+
+
+/* Center the main content for better readability */
+article {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  max-width: 1200px !important;
+  width: 100%;
+}
+
+/* Ensure TOC doesn't overlap if content is centered */
+.nextra-toc > div {
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+html.dark .nextra-toc > div {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Nextra Layout Overrides */
+html,
+body,
+#__next {
+  background: var(--brand-gradient-soft);
+  min-height: 100vh;
+}
+
+/* Ensure no white backgrounds on wrappers */
+article,
+main,
+.nextra-container,
+.nextra-content,
+.nextra-sidebar-container {
+  background-color: transparent !important;
+}
+
+/* Sidebar: Ensure it feels grounded and removes "flying" white bg */
+.nextra-sidebar-container,
+aside {
+  background: transparent !important;
+  border-right: 1px solid rgba(168, 186, 207, 0.35);
+  backdrop-filter: none;
+  background-color: transparent !important;
+}
+
+/* Fix for large screens where sidebar might have white wrappers */
+@media (min-width: 1024px) {
+  .nextra-sidebar-container {
+    position: sticky;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    overflow-y: auto;
+  }
+  
+  /* Ensure the area behind the sidebar is clean */
+  .nextra-container {
+    background-color: transparent !important;
+  }
+}
+
+html.dark .nextra-sidebar-container,
+html.dark aside {
+  background: transparent !important;
+  border-right: 1px solid rgba(134, 174, 221, 0.25);
+}
+
+/* Mobile overlay & panel polish */
+@media (max-width: 768px) {
+  /* Replace the default dark scrim with a branded overlay */
+  div[class*="nx-bg-black"],
+  [class*="bg-black"] {
+    background: linear-gradient(
+      135deg,
+      rgba(250, 210, 173, 0.85),
+      rgba(168, 186, 207, 0.88) 45%,
+      rgba(134, 174, 221, 0.9)
+    ) !important;
+    backdrop-filter: blur(12px);
+  }
+
+  /* Mobile sidebar panel - must be solid and visible */
+  .nextra-sidebar-container {
+    background: #ffffff !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(134, 174, 221, 0.25);
+    box-shadow: 0 4px 20px rgba(134, 174, 221, 0.2);
+  }
+
+  /* All nav items inside mobile menu */
+  .nextra-sidebar-container nav,
+  .nextra-sidebar-container ul,
+  .nextra-sidebar-container li,
+  .nextra-sidebar-container a,
+  .nextra-sidebar-container button,
+  .nextra-sidebar-container span,
+  .nextra-sidebar-container div {
+    background: transparent !important;
+    color: #1e293b !important;
+  }
+
+  /* Active/current page highlight */
+  .nextra-sidebar-container a[aria-current="page"],
+  .nextra-sidebar-container li.active a {
+    background: rgba(134, 174, 221, 0.15) !important;
+    color: #1e40af !important;
+    font-weight: 600;
+    border-radius: 8px;
+  }
+
+  /* Hover states */
+  .nextra-sidebar-container a:hover {
+    background: rgba(134, 174, 221, 0.1) !important;
+    border-radius: 6px;
+  }
+
+  /* Search in mobile menu */
+  .nextra-search {
+    background: #f8fafc !important;
+    border: 1px solid rgba(134, 174, 221, 0.3) !important;
+    border-radius: 10px !important;
+    margin: 0.5rem !important;
+  }
+
+  .nextra-search input {
+    color: #1e293b !important;
+    background: transparent !important;
+  }
+
+  .nextra-search input::placeholder {
+    color: #94a3b8 !important;
+  }
+
+  /* Hamburger and close button visibility */
+  button[aria-label="Menu"],
+  button[aria-label="Close"],
+  .nextra-hamburger,
+  nav button,
+  header button {
+    color: #1e293b !important;
+  }
+
+  /* SVG icons in buttons */
+  button svg,
+  nav svg,
+  header svg {
+    color: #1e293b !important;
+    stroke: #1e293b !important;
+  }
+
+  /* Folder/section headers in sidebar */
+  .nextra-sidebar-container [class*="separator"],
+  .nextra-sidebar-container h3,
+  .nextra-sidebar-container h4 {
+    color: #64748b !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+  }
+}
+
+/* Feedback / Edit Page Footer Styling - Only style footer if needed, removed empty feedback container selectors */
+.nextra-content footer {
+  margin-top: 4rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0.2)
+  );
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(134, 174, 221, 0.1);
+}
+
+html.dark .nextra-content footer {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.03)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Style the links inside the footer */
+.nextra-content footer a {
+  opacity: 0.9;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.nextra-content footer a:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+
+.nextra-content {
+  background: linear-gradient(
+    135deg,
+    rgba(250, 210, 173, 0.12),
+    rgba(168, 186, 207, 0.08) 55%,
+    rgba(134, 174, 221, 0.12)
+  );
+}
+
+html.dark .nextra-content {
+  background: linear-gradient(
+    135deg,
+    rgba(250, 210, 173, 0.06),
+    rgba(168, 186, 207, 0.08) 55%,
+    rgba(134, 174, 221, 0.08)
+  );
+}
+
+.nextra-content .nx-prose h1,
+.nextra-content h1 {
+  /* 
+   * Title gradient - optimized for 3:1 contrast (WCAG AA large text)
+   * Background: #fff8f1 (luminance ~0.95)
+   * Target: 3:1 minimum contrast ratio
+   */
+  background: linear-gradient(120deg, #c49a6c 0%, #7a8fa8 45%, #5a87be 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+}
+
+.nextra-content .nx-prose h2 {
+  color: #0f172a;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+}
+
+.nextra-content .nx-prose h3 {
+  color: #3d5d85;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+}
+
+html.dark .nextra-content .nx-prose h3 {
+  color: #c7d9f3;
+}
+
+.nextra-content .nx-prose a {
+  color: #2f6fb5;
+  text-decoration-color: rgba(134, 174, 221, 0.6);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+html.dark .nextra-content .nx-prose a {
+  color: #86aedd;
+  text-decoration-color: rgba(250, 210, 173, 0.65);
+}
+
+.nextra-content blockquote {
+  border-left-color: #86aedd;
+  background: linear-gradient(
+    120deg,
+    rgba(250, 210, 173, 0.2),
+    rgba(134, 174, 221, 0.18)
+  );
+}
+
+html.dark .nextra-content blockquote {
+  border-left-color: #fad2ad;
+  background: linear-gradient(
+    120deg,
+    rgba(250, 210, 173, 0.14),
+    rgba(134, 174, 221, 0.12)
+  );
+}
+
+.nextra-content code,
+.nextra-content pre {
+  background: linear-gradient(
+    135deg,
+    rgba(250, 210, 173, 0.18),
+    rgba(134, 174, 221, 0.12)
+  );
+  border-color: rgba(134, 174, 221, 0.35);
+}
+
+html.dark .nextra-content code,
+html.dark .nextra-content pre {
+  background: linear-gradient(
+    135deg,
+    rgba(250, 210, 173, 0.1),
+    rgba(134, 174, 221, 0.1)
+  );
+  border-color: rgba(134, 174, 221, 0.25);
+}
+
+.nextra-search input {
+  border: 1px solid rgba(168, 186, 207, 0.6);
+  background: linear-gradient(90deg, rgba(250, 210, 173, 0.08), rgba(134, 174, 221, 0.1));
+}
+
+html.dark .nextra-search input {
+  border: 1px solid rgba(134, 174, 221, 0.35);
+  background: linear-gradient(90deg, rgba(250, 210, 173, 0.05), rgba(134, 174, 221, 0.08));
+}
+
+.nextra-nav-container .nx-btn,
+.nextra-menu-mobile button,
+.nextra-menu-desktop button {
+  background-image: none;
+  background-color: rgba(134, 174, 221, 0.1);
+  border: 1px solid rgba(134, 174, 221, 0.5);
+  color: #2f6fb5;
+  box-shadow: 0 2px 8px rgba(134, 174, 221, 0.1);
+  transition: all 0.2s ease;
+}
+
+.nextra-nav-container .nx-btn:hover,
+.nextra-menu-mobile button:hover,
+.nextra-menu-desktop button:hover {
+  background-color: rgba(134, 174, 221, 0.2);
+  transform: translateY(-1px);
+}
+
+html.dark .nextra-nav-container .nx-btn,
+html.dark .nextra-menu-mobile button,
+html.dark .nextra-menu-desktop button {
+  color: #86aedd;
+  background-color: rgba(134, 174, 221, 0.1);
+  border: 1px solid rgba(134, 174, 221, 0.3);
+}
+
+/* Old Mermaid gantt styles removed - now using custom React GanttChart component */
