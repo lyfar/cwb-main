@@ -125,7 +125,7 @@ export function Hero() {
           alt="Henderson"
           width={600}
           height={600}
-          className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-[15%] opacity-50 mix-blend-soft-light object-contain h-full w-auto max-w-[min(80%,400px)] md:right-0 md:left-auto md:translate-x-[15%] md:translate-y-0 md:max-w-[min(50%,750px)] lg:max-w-[min(45%,850px)] xl:max-w-[min(40%,900px)]"
+          className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-[15%] opacity-50 mix-blend-soft-light object-contain h-full w-auto max-w-[min(120%,500px)] scale-125 md:scale-100 md:right-0 md:left-auto md:translate-x-[15%] md:translate-y-0 md:max-w-[min(50%,750px)] lg:max-w-[min(45%,850px)] xl:max-w-[min(40%,900px)]"
           priority
         />
       </div>
