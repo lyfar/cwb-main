@@ -33,7 +33,17 @@ import {
 
 function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme()
-  const current = theme === "system" ? resolvedTheme : theme
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const current = mounted
+    ? theme === "system"
+      ? resolvedTheme
+      : theme
+    : "light"
 
   return (
     <DropdownMenu>
