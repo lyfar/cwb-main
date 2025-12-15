@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
         hostname: "img.logo.dev",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
     ],
   },
   trailingSlash: true,

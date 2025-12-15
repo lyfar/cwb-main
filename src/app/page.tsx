@@ -1,8 +1,10 @@
+import Image from "next/image"
 import Link from "next/link"
 import {
   ArrowsLeftRight as ArrowsLeftRightIcon,
   Bank as BankIcon,
   ChartLineUp as ChartLineUpIcon,
+  ShieldCheck as ShieldCheckIcon,
   Vault as VaultIcon,
 } from "@phosphor-icons/react/dist/ssr"
 
@@ -10,7 +12,9 @@ import Hero from "@/components/ui/hero"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { BentoGridShowcase } from "@/components/ui/bento-grid"
 import { Separator } from "@/components/ui/separator"
+import { cn } from "@/lib/utils"
 
 const capabilities = [
   {
@@ -24,6 +28,8 @@ const capabilities = [
     description: "Open-architecture access to public and private opportunities.",
     href: "/what-we-do/asset-management",
     icon: ChartLineUpIcon,
+    image:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=80",
   },
   {
     title: "Brokerage",
@@ -38,6 +44,128 @@ const capabilities = [
     icon: BankIcon,
   },
 ] as const
+
+type Capability = (typeof capabilities)[number]
+
+function CapabilityTile({ capability }: { capability: Capability }) {
+  const Icon = capability.icon
+  const hasImage = Boolean(capability.image)
+  return (
+    <Card
+      variant="glass"
+      className="relative h-full overflow-hidden"
+    >
+      {capability.image ? (
+        <>
+          <Image
+            src={capability.image}
+            alt={`${capability.title} background`}
+            fill
+            className="object-cover opacity-80"
+            sizes="(min-width: 1024px) 33vw, 100vw"
+            priority={false}
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/75 to-background/55 backdrop-saturate-125" />
+        </>
+      ) : null}
+      <div className="relative z-10 h-full">
+        <CardHeader className="flex-row items-center gap-3 space-y-0">
+          <div className="bg-primary/10 text-primary grid size-10 shrink-0 place-items-center rounded-md">
+            <Icon className="size-5" />
+          </div>
+          <CardTitle className="text-base">{capability.title}</CardTitle>
+        </CardHeader>
+        <CardContent
+          className={cn(
+            "flex h-full flex-col gap-4 text-sm leading-relaxed",
+            hasImage ? "text-foreground" : "text-muted-foreground"
+          )}
+        >
+          <p>{capability.description}</p>
+          <div className="mt-auto flex justify-end">
+            <Button asChild variant={hasImage ? "secondary" : "ghost"}>
+              <Link href={capability.href}>Learn more</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </div>
+    </Card>
+  )
+}
+
+function BuiltOnTrustCard() {
+  return (
+    <Card variant="glass" className="h-full bg-primary/5">
+      <CardHeader className="space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-primary/10 text-primary grid size-12 shrink-0 place-items-center rounded-xl">
+            <ShieldCheckIcon className="size-6" />
+          </div>
+          <div className="space-y-2">
+            <Badge variant="outline" className="w-fit">
+              Built on trust
+            </Badge>
+            <CardTitle className="text-xl">Licensed custodian, client-first stewardship.</CardTitle>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="flex h-full flex-col justify-between gap-6 text-sm leading-relaxed text-muted-foreground">
+        <div className="space-y-3">
+          <p>
+            We maintain segregated custody arrangements and robust operational controls to keep client assets
+            ring-fenced.
+          </p>
+          <p>We operate with transparent oversight so you always know how your assets are safeguarded.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild>
+            <Link href="/contacts">Get in touch</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/who-we-are">Who we are</Link>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function OnboardingCard() {
+  const image =
+    "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1400&q=80"
+  return (
+    <Card variant="glass" className="relative h-full overflow-hidden">
+      <Image
+        src={image}
+        alt="Client conversation"
+        fill
+        className="object-cover opacity-80"
+        sizes="(min-width: 1024px) 33vw, 100vw"
+        priority={false}
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/75 to-background/55 backdrop-saturate-125" />
+      <div className="relative z-10 h-full">
+        <CardHeader className="space-y-2">
+          <Badge variant="outline" className="w-fit">
+            Next steps
+          </Badge>
+          <CardTitle className="text-base">Tell us what you need</CardTitle>
+        </CardHeader>
+        <CardContent className="flex h-full flex-col gap-4 text-sm leading-relaxed text-foreground">
+          <p>Let us know your custody, trading, or banking needs and we&apos;ll match the right specialists.</p>
+          <div className="mt-auto flex flex-wrap justify-end gap-2">
+            <Button asChild>
+              <Link href="/contacts">Talk to our team</Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link href="/what-we-do">Explore capabilities</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </div>
+    </Card>
+  )
+}
 
 export default function HomePage() {
   return (
@@ -63,50 +191,15 @@ export default function HomePage() {
 
         <Separator className="my-10" />
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {capabilities.map((capability) => (
-            <Card key={capability.title} variant="glass" className="group">
-              <CardHeader className="flex-row items-center gap-3 space-y-0">
-                <capability.icon className="text-primary size-6" />
-                <CardTitle className="text-base">{capability.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-muted-foreground text-sm leading-relaxed">
-                {capability.description}
-                <div className="mt-4">
-                  <Button asChild variant="ghost" className="px-0">
-                    <Link href={capability.href}>Learn more</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <Separator className="my-10" />
-
-        <Card variant="glass">
-          <CardHeader>
-            <CardTitle className="text-base">Built on trust</CardTitle>
-          </CardHeader>
-          <CardContent className="text-muted-foreground grid gap-3 text-sm leading-relaxed md:grid-cols-2">
-            <div>
-              We maintain segregated custody arrangements and robust operational
-              controls to keep client assets ring-fenced.
-            </div>
-            <div>
-              Ready to talk? Reach our team for onboarding, custody, or trading
-              support.
-            </div>
-            <div className="flex flex-col gap-2 md:col-span-2 md:flex-row">
-              <Button asChild>
-                <Link href="/contacts">Get in touch</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="/who-we-are">Who we are</Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <BentoGridShowcase
+          className="mt-10"
+          integrations={<CapabilityTile capability={capabilities[0]} />}
+          mainFeature={<CapabilityTile capability={capabilities[1]} />}
+          featureTags={<CapabilityTile capability={capabilities[2]} />}
+          secondaryFeature={<CapabilityTile capability={capabilities[3]} />}
+          statistic={<BuiltOnTrustCard />}
+          journey={<OnboardingCard />}
+        />
       </section>
     </main>
   )
