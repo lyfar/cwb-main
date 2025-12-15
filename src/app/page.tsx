@@ -41,7 +41,10 @@ const capabilities = [
   },
 ] as const
 
-type Capability = (typeof capabilities)[number]
+type Capability = (typeof capabilities)[number] & {
+  image?: string
+  partners?: typeof custodyPartners | typeof brokeragePartners
+}
 
 function CapabilityTile({ capability }: { capability: Capability }) {
   const Icon = capability.icon
