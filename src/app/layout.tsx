@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes"
 
 import { SiteHeader } from "@/components/site/site-header"
 import { SiteFooter } from "@/components/site/site-footer"
+import { PageTransition } from "@/components/site/page-transition"
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
 
@@ -49,7 +50,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SiteHeader />
-          {children}
+          <PageTransition>{children}</PageTransition>
           <SiteFooter />
           <Toaster />
         </ThemeProvider>
