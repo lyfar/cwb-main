@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BentoGridShowcase } from "@/components/ui/bento-grid"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
+import { brokeragePartners, custodyPartners, logoDevUrl } from "@/lib/partners"
 
 const capabilities = [
   {
@@ -22,6 +23,7 @@ const capabilities = [
     description: "Secure, segregated safekeeping with top-tier global partners.",
     href: "/what-we-do/safe-custody",
     icon: VaultIcon,
+    partners: custodyPartners.slice(0, 3),
   },
   {
     title: "Asset management",
@@ -36,6 +38,7 @@ const capabilities = [
     description: "Global execution with APAC and emerging market coverage.",
     href: "/what-we-do/brokerage",
     icon: ArrowsLeftRightIcon,
+    partners: brokeragePartners.slice(0, 3),
   },
   {
     title: "Banking services",
@@ -50,6 +53,7 @@ type Capability = (typeof capabilities)[number]
 function CapabilityTile({ capability }: { capability: Capability }) {
   const Icon = capability.icon
   const hasImage = Boolean(capability.image)
+  const hasPartners = Boolean(capability.partners && capability.partners.length > 0)
   return (
     <Card
       variant="glass"
@@ -82,6 +86,20 @@ function CapabilityTile({ capability }: { capability: Capability }) {
           )}
         >
           <p>{capability.description}</p>
+          {hasPartners && (
+            <div className="flex flex-wrap items-center gap-3">
+              {capability.partners?.map((partner) => (
+                <Image
+                  key={partner.domain}
+                  src={logoDevUrl(partner.domain)}
+                  alt={`${partner.name} logo`}
+                  width={100}
+                  height={40}
+                  className="h-4 w-auto opacity-60"
+                />
+              ))}
+            </div>
+          )}
           <div className="mt-auto flex justify-end">
             <Button asChild variant={hasImage ? "secondary" : "ghost"}>
               <Link href={capability.href}>Learn more</Link>
