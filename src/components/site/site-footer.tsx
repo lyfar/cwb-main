@@ -1,7 +1,7 @@
 import Link from "next/link"
 
+import { ThemeToggle } from "@/components/site/theme-toggle"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 
 const navItems = [
@@ -78,9 +78,6 @@ export function SiteFooter() {
                 ))}
               </div>
             </div>
-            <Button asChild size="sm" className="w-fit">
-              <Link href="/contacts">Get in touch</Link>
-            </Button>
           </div>
         </div>
 
@@ -88,10 +85,12 @@ export function SiteFooter() {
 
         <div className="text-muted-foreground flex flex-col gap-2 text-xs md:flex-row md:items-center md:justify-between">
           <div>© {year} CWB Hong Kong. All rights reserved.</div>
-          <div>Built on trust. Driven by vision.</div>
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
+            <div>Built on trust. Driven by vision.</div>
+            <ThemeToggle variant="outline" size="sm" showLabel />
+          </div>
         </div>
       </div>
     </footer>
   )
 }
-
