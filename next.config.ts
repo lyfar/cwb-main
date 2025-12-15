@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "export",
+  basePath: "/cwb-main",
+  assetPrefix: "/cwb-main",
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -12,8 +14,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Set basePath for GitHub Pages subdirectory deployment
-  basePath: "/cwb-main",
   trailingSlash: true,
 };
 
