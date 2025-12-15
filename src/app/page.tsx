@@ -29,8 +29,7 @@ const capabilities = [
     description: "Open-architecture access to public and private opportunities.",
     href: "/what-we-do/asset-management",
     icon: ChartLineUpIcon,
-    image:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=80",
+    image: "/Gemini_Generated_Image_ivc5x4ivc5x4ivc5.jpg",
   },
   {
     title: "Brokerage",
