@@ -36,7 +36,7 @@ export function Hero() {
   const [mounted, setMounted] = React.useState(false)
   const [meshVisible, setMeshVisible] = React.useState(false)
   const ready = mounted && (resolvedTheme === "light" || resolvedTheme === "dark")
-  const isDark = resolvedTheme === "dark"
+  const isDark = ready && resolvedTheme === "dark"
   const showMesh = ready
 
   React.useEffect(() => {
@@ -49,17 +49,23 @@ export function Hero() {
     const id = requestAnimationFrame(() => setMeshVisible(true))
     return () => cancelAnimationFrame(id)
   }, [reduceMotion])
-  const palette =
-    resolvedTheme === "dark" ? PALETTES.dark : PALETTES.light
-  const overlayPalette =
-    resolvedTheme === "dark" ? OVERLAY_PALETTES.dark : OVERLAY_PALETTES.light
+  const palette = ready
+    ? resolvedTheme === "dark"
+      ? PALETTES.dark
+      : PALETTES.light
+    : PALETTES.light
+  const overlayPalette = ready
+    ? resolvedTheme === "dark"
+      ? OVERLAY_PALETTES.dark
+      : OVERLAY_PALETTES.light
+    : OVERLAY_PALETTES.light
 
-  const baseOpacity = isDark ? "opacity-[0.55]" : "opacity-[0.7]"
-  const overlayOpacity = isDark ? "opacity-[0.32]" : "opacity-[0.6]"
+  const baseOpacity = ready ? (isDark ? "opacity-[0.55]" : "opacity-[0.7]") : "opacity-[0.7]"
+  const overlayOpacity = ready ? (isDark ? "opacity-[0.32]" : "opacity-[0.6]") : "opacity-[0.6]"
 
   return (
     <section className="bg-background bg-brand-soft relative overflow-hidden min-h-[85vh] md:min-h-[75vh]">
-      <div className="pointer-events-none absolute inset-0">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         {showMesh ? (
           <>
             <MeshGradient
@@ -90,24 +96,41 @@ export function Hero() {
             />
           </>
         ) : null}
-        <div
-          className={`absolute inset-0 backdrop-blur-[6px] ${
-            isDark ? "opacity-90" : "opacity-40"
-          }`}
-          style={{
-            background: isDark
-              ? "radial-gradient(circle at 70% 30%, rgba(134, 174, 221, 0.18), transparent 42%), radial-gradient(circle at 30% 80%, rgba(250, 210, 173, 0.14), transparent 38%)"
-              : "radial-gradient(circle at 24% 24%, rgba(248, 215, 174, 0.5), transparent 55%), radial-gradient(circle at 78% 20%, rgba(136, 171, 219, 0.45), transparent 58%), radial-gradient(circle at 50% 50%, rgba(169, 184, 206, 0.35), transparent 60%)",
-          }}
-        />
-        <div
-          className={`absolute inset-0 bg-gradient-to-b from-background/0 ${
-            isDark ? "via-background/20" : "via-background/10"
-          } to-background`}
+        {ready ? (
+          <>
+            <div
+              className={`absolute inset-0 backdrop-blur-[6px] ${
+                isDark ? "opacity-90" : "opacity-40"
+              }`}
+              style={{
+                background: isDark
+                  ? "radial-gradient(circle at 70% 30%, rgba(134, 174, 221, 0.18), transparent 42%), radial-gradient(circle at 30% 80%, rgba(250, 210, 173, 0.14), transparent 38%)"
+                  : "radial-gradient(circle at 24% 24%, rgba(248, 215, 174, 0.5), transparent 55%), radial-gradient(circle at 78% 20%, rgba(136, 171, 219, 0.45), transparent 58%), radial-gradient(circle at 50% 50%, rgba(169, 184, 206, 0.35), transparent 60%)",
+              }}
+            />
+            <div
+              className={`absolute inset-0 bg-gradient-to-b from-background/0 ${
+                isDark ? "via-background/20" : "via-background/10"
+              } to-background`}
+            />
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 backdrop-blur-[6px] opacity-40" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-background/10 to-background" />
+          </>
+        )}
+        <Image
+          src="/henderson.png"
+          alt="Henderson"
+          width={600}
+          height={600}
+          className="absolute right-0 bottom-0 translate-x-[15%] opacity-50 mix-blend-soft-light object-contain h-full w-auto max-w-[min(55%,650px)] md:max-w-[min(50%,750px)] lg:max-w-[min(45%,850px)] xl:max-w-[min(40%,900px)] hidden md:block"
+          priority
         />
       </div>
 
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 pt-48 pb-16 md:py-24">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 pt-48 pb-0 md:py-24">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 12 }}
           animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
