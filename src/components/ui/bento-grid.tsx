@@ -35,33 +35,27 @@ const itemVariants = {
  * Each prop represents a "slot" in the grid.
  */
 interface BentoGridShowcaseProps {
-  /** Slot for the top-left card (Integrations) */
-  integrations: React.ReactNode;
-  /** Slot for the top-right card (Feature Tags) */
-  featureTags: React.ReactNode;
-  /** Slot for the tall middle card (Main Feature) */
-  mainFeature: React.ReactNode;
-  /** Slot for the middle-left card (Secondary Feature) */
-  secondaryFeature: React.ReactNode;
-  /** Slot for the middle-right card (Statistic) */
-  statistic: React.ReactNode;
-  /** Slot for the bottom-left card (Journey) */
-  journey: React.ReactNode;
+  /** Slot 1: Top-left card (smaller) */
+  item1: React.ReactNode;
+  /** Slot 2: Top-right card (larger, spans 2 rows) */
+  item2: React.ReactNode;
+  /** Slot 3: Bottom-left card (smaller) */
+  item3: React.ReactNode;
+  /** Slot 4: Bottom card (full width) */
+  item4: React.ReactNode;
   /** Optional class names for the grid container */
   className?: string;
 }
 
 /**
- * A responsive, animated 3-column bento grid layout component.
- * It arranges six content slots in a specific 3-row vertical layout.
+ * A responsive, animated bento grid layout component.
+ * Creates an asymmetric layout with varied card sizes.
  */
 export const BentoGridShowcase = ({
-  integrations,
-  featureTags,
-  mainFeature,
-  secondaryFeature,
-  statistic,
-  journey,
+  item1,
+  item2,
+  item3,
+  item4,
   className,
 }: BentoGridShowcaseProps) => {
   return (
@@ -70,7 +64,7 @@ export const BentoGridShowcase = ({
       initial="hidden"
       animate="visible"
       className={cn(
-        // Core grid layout: 1 col on mobile, 3 on desktop
+        // Core grid layout: 1 col on mobile, 3 columns on desktop for bento effect
         "grid w-full grid-cols-1 gap-6 md:grid-cols-3",
         // Defines 3 explicit rows on medium screens and up
         "md:grid-rows-3",
@@ -79,38 +73,24 @@ export const BentoGridShowcase = ({
         className
       )}
     >
-      {/* The order of these divs is important for CSS grid auto-placement 
-        to match the new layout.
-      */}
-
-      {/* Slot 1: Integrations (1,1) */}
+      {/* Slot 1: Top-left - Small card (1 col, 1 row) */}
       <motion.div variants={itemVariants} className="md:col-span-1 md:row-span-1">
-        {integrations}
+        {item1}
       </motion.div>
 
-      {/* Slot 2: Main Feature (1,2) - Spans 3 rows */}
-      <motion.div variants={itemVariants} className="md:col-span-1 md:row-span-3">
-        {mainFeature}
+      {/* Slot 2: Top-right - Large card (2 cols, spans 2 rows) */}
+      <motion.div variants={itemVariants} className="md:col-span-2 md:row-span-2">
+        {item2}
       </motion.div>
 
-      {/* Slot 3: Feature Tags (1,3) */}
+      {/* Slot 3: Bottom-left - Small card (1 col, 1 row) */}
       <motion.div variants={itemVariants} className="md:col-span-1 md:row-span-1">
-        {featureTags}
+        {item3}
       </motion.div>
 
-      {/* Slot 4: Secondary Feature (2,1) */}
-      <motion.div variants={itemVariants} className="md:col-span-1 md:row-span-1">
-        {secondaryFeature}
-      </motion.div>
-
-      {/* Slot 5: Statistic (2,3) - Spans 2 rows */}
-      <motion.div variants={itemVariants} className="md:col-span-1 md:row-span-2">
-        {statistic}
-      </motion.div>
-
-      {/* Slot 6: Journey (3,1) */}
-      <motion.div variants={itemVariants} className="md:col-span-1 md:row-span-1">
-        {journey}
+      {/* Slot 4: Bottom - Full width card (3 cols, 1 row) */}
+      <motion.div variants={itemVariants} className="md:col-span-3 md:row-span-1">
+        {item4}
       </motion.div>
     </motion.section>
   );

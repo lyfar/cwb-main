@@ -2,7 +2,6 @@ import Image from "next/image"
 import Link from "next/link"
 import {
   ArrowsLeftRight as ArrowsLeftRightIcon,
-  Bank as BankIcon,
   ChartLineUp as ChartLineUpIcon,
   ShieldCheck as ShieldCheckIcon,
   Vault as VaultIcon,
@@ -39,12 +38,6 @@ const capabilities = [
     href: "/what-we-do/brokerage",
     icon: ArrowsLeftRightIcon,
     partners: brokeragePartners.slice(0, 3),
-  },
-  {
-    title: "Banking services",
-    description: "Streamlined payments across major currencies.",
-    href: "/what-we-do/banking-services",
-    icon: BankIcon,
   },
 ] as const
 
@@ -148,42 +141,6 @@ function BuiltOnTrustCard() {
   )
 }
 
-function OnboardingCard() {
-  const image =
-    "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1400&q=80"
-  return (
-    <Card variant="glass" className="relative h-full overflow-hidden">
-      <Image
-        src={image}
-        alt="Client conversation"
-        fill
-        className="object-cover opacity-80"
-        sizes="(min-width: 1024px) 33vw, 100vw"
-        priority={false}
-      />
-      <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/75 to-background/55 backdrop-saturate-125" />
-      <div className="relative z-10 h-full">
-        <CardHeader className="space-y-2">
-          <Badge variant="outline" className="w-fit">
-            Next steps
-          </Badge>
-          <CardTitle className="text-base">Tell us what you need</CardTitle>
-        </CardHeader>
-        <CardContent className="flex h-full flex-col gap-4 text-sm leading-relaxed text-foreground">
-          <p>Let us know your custody, trading, or banking needs and we&apos;ll match the right specialists.</p>
-          <div className="mt-auto flex flex-wrap justify-end gap-2">
-            <Button asChild>
-              <Link href="/contacts">Talk to our team</Link>
-            </Button>
-            <Button asChild variant="secondary">
-              <Link href="/what-we-do">Explore capabilities</Link>
-            </Button>
-          </div>
-        </CardContent>
-      </div>
-    </Card>
-  )
-}
 
 export default function HomePage() {
   return (
@@ -198,7 +155,7 @@ export default function HomePage() {
               Institutional-grade custody. Personalised guidance.
             </h2>
             <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
-              Safe custody, brokerage, asset management, and banking services —
+              Safe custody, brokerage, and asset management —
               designed for institutional and private clients.
             </p>
           </div>
@@ -211,12 +168,10 @@ export default function HomePage() {
 
         <BentoGridShowcase
           className="mt-10"
-          integrations={<CapabilityTile capability={capabilities[0]} />}
-          mainFeature={<CapabilityTile capability={capabilities[1]} />}
-          featureTags={<CapabilityTile capability={capabilities[2]} />}
-          secondaryFeature={<CapabilityTile capability={capabilities[3]} />}
-          statistic={<BuiltOnTrustCard />}
-          journey={<OnboardingCard />}
+          item1={<CapabilityTile capability={capabilities[0]} />}
+          item2={<CapabilityTile capability={capabilities[1]} />}
+          item3={<CapabilityTile capability={capabilities[2]} />}
+          item4={<BuiltOnTrustCard />}
         />
       </section>
     </main>
