@@ -1,5 +1,5 @@
 export type WhatWeDoItem = {
-  id: "overview" | "safe-custody" | "asset-management" | "brokerage" | "banking-services"
+  id: "overview" | "safe-custody" | "asset-management" | "brokerage"
   title: string
   href: string
   description: string
@@ -29,12 +29,6 @@ export const whatWeDoItems: WhatWeDoItem[] = [
     title: "Brokerage",
     href: "/what-we-do/brokerage",
     description: "Execution and market access across global + APAC venues.",
-  },
-  {
-    id: "banking-services",
-    title: "Banking services",
-    href: "/what-we-do/banking-services",
-    description: "Payments and multi-currency services connected to accounts.",
   },
 ]
 

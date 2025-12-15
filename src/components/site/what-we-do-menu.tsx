@@ -5,7 +5,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   ArrowsLeftRight,
-  Bank,
   CaretDown,
   ChartLineUp,
   Check,
@@ -30,7 +29,6 @@ const itemIcons = {
   "safe-custody": Vault,
   "asset-management": ChartLineUp,
   brokerage: ArrowsLeftRight,
-  "banking-services": Bank,
 } as const
 
 function normalizePathname(pathname: string) {
