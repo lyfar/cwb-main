@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "export",
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -10,6 +12,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Set basePath for GitHub Pages subdirectory deployment
+  basePath: "/cwb-main",
+  trailingSlash: true,
 };
 
 export default nextConfig;

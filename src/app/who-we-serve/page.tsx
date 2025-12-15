@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function WhoWeServePage() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-6 py-14 md:py-16">
+    <main className="mx-auto w-full max-w-6xl px-6 pt-24 pb-14 md:pt-28 md:pb-16">
       <div className="space-y-3">
         <Badge variant="outline">Client-first</Badge>
         <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">

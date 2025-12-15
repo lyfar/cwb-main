@@ -19,8 +19,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
 const PALETTES = {
-  light: ["#fad2ad", "#a8bacf", "#86aedd", "#f7e5d3", "#ffffff"],
-  dark: ["#0b1425", "#272c2f", "#5a87be", "#fad2ad", "#86aedd"],
+  light: ["#0f172a", "#fad2ad", "#a8bacf", "#86aedd", "#ffffff"],
+  dark: ["#0f172a", "#fad2ad", "#a8bacf", "#86aedd", "#0b1425"],
+} as const
+
+const OVERLAY_PALETTES = {
+  light: ["#86aedd", "#fad2ad", "#a8bacf", "#0f172a"],
+  dark: ["#86aedd", "#fad2ad", "#a8bacf", "#0f172a"],
 } as const
 
 const HERO_PARTNERS = [...custodyPartners, ...brokeragePartners].slice(0, 8)
@@ -46,22 +51,54 @@ export function Hero() {
   }, [reduceMotion])
   const palette =
     resolvedTheme === "dark" ? PALETTES.dark : PALETTES.light
+  const overlayPalette =
+    resolvedTheme === "dark" ? OVERLAY_PALETTES.dark : OVERLAY_PALETTES.light
+
+  const baseOpacity = isDark ? "opacity-[0.55]" : "opacity-[0.28]"
+  const overlayOpacity = isDark ? "opacity-[0.32]" : "opacity-[0.18]"
 
   return (
     <section className="bg-background bg-brand-soft relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
         {showMesh ? (
-          <MeshGradient
-            className={`absolute inset-0 h-full w-full saturate-[1.15] brightness-[1.1] transition-opacity duration-500 ${
-              meshVisible ? (isDark ? "opacity-45" : "opacity-22") : "opacity-0"
-            }`}
-            colors={[...palette]}
-            speed={reduceMotion ? 0 : 0.18}
-          />
+          <>
+            <MeshGradient
+              className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${
+                isDark
+                  ? "saturate-[1.05] brightness-[1.05]"
+                  : "saturate-[1.1] brightness-[1.15]"
+              } ${meshVisible ? baseOpacity : "opacity-0"}`}
+              colors={[...palette]}
+              speed={reduceMotion ? 0 : 0.25}
+              distortion={isDark ? 0.55 : 0.7}
+              swirl={isDark ? 0.25 : 0.35}
+              grainOverlay={isDark ? 0.08 : 0.1}
+              style={{ backgroundColor: isDark ? "#0f172a" : "#fff8f1" }}
+            />
+            <MeshGradient
+              className={`absolute inset-0 h-full w-full mix-blend-screen transition-opacity duration-700 ${
+                isDark ? "brightness-[1.05]" : "brightness-[1.15]"
+              } ${meshVisible ? overlayOpacity : "opacity-0"}`}
+              colors={[...overlayPalette]}
+              speed={reduceMotion ? 0 : 0.18}
+              distortion={0.9}
+              swirl={0.5}
+              grainOverlay={isDark ? 0.12 : 0.14}
+              style={{ backgroundColor: "transparent" }}
+            />
+          </>
         ) : null}
         <div
+          className="absolute inset-0 opacity-90 backdrop-blur-[12px]"
+          style={{
+            background: isDark
+              ? "radial-gradient(circle at 70% 30%, rgba(134, 174, 221, 0.18), transparent 42%), radial-gradient(circle at 30% 80%, rgba(250, 210, 173, 0.14), transparent 38%)"
+              : "radial-gradient(circle at 24% 24%, rgba(250, 210, 173, 0.22), transparent 55%), radial-gradient(circle at 78% 20%, rgba(134, 174, 221, 0.16), transparent 58%)",
+          }}
+        />
+        <div
           className={`absolute inset-0 bg-gradient-to-b from-background/0 ${
-            isDark ? "via-background/20" : "via-background/60"
+            isDark ? "via-background/20" : "via-background/55"
           } to-background`}
         />
       </div>

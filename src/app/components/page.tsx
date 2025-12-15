@@ -47,7 +47,7 @@ export default function ComponentsPage() {
 
   return (
     <div className="bg-background min-h-svh">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pt-24 pb-10 md:pt-28">
         <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -97,4 +97,3 @@ export default function ComponentsPage() {
     </div>
   )
 }
-
