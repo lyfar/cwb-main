@@ -19,13 +19,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
 const PALETTES = {
-  light: ["#0f172a", "#fad2ad", "#a8bacf", "#86aedd", "#ffffff"],
-  dark: ["#0f172a", "#fad2ad", "#a8bacf", "#86aedd", "#0b1425"],
+  light: ["#f8d7ae", "#88abdb", "#a9b8ce", "#dacabb", "#ffffff"],
+  dark: ["#0b1425", "#272c2f", "#5a87be", "#f8d7ae", "#88abdb"],
 } as const
 
 const OVERLAY_PALETTES = {
-  light: ["#86aedd", "#fad2ad", "#a8bacf", "#0f172a"],
-  dark: ["#86aedd", "#fad2ad", "#a8bacf", "#0f172a"],
+  light: ["#88abdb", "#f8d7ae", "#a9b8ce", "#c4c3c3"],
+  dark: ["#88abdb", "#f8d7ae", "#a9b8ce", "#0f172a"],
 } as const
 
 const HERO_PARTNERS = [...custodyPartners, ...brokeragePartners].slice(0, 8)
@@ -54,11 +54,11 @@ export function Hero() {
   const overlayPalette =
     resolvedTheme === "dark" ? OVERLAY_PALETTES.dark : OVERLAY_PALETTES.light
 
-  const baseOpacity = isDark ? "opacity-[0.55]" : "opacity-[0.28]"
-  const overlayOpacity = isDark ? "opacity-[0.32]" : "opacity-[0.18]"
+  const baseOpacity = isDark ? "opacity-[0.55]" : "opacity-[0.7]"
+  const overlayOpacity = isDark ? "opacity-[0.32]" : "opacity-[0.6]"
 
   return (
-    <section className="bg-background bg-brand-soft relative overflow-hidden">
+    <section className="bg-background bg-brand-soft relative overflow-hidden min-h-[85vh] md:min-h-[75vh]">
       <div className="pointer-events-none absolute inset-0">
         {showMesh ? (
           <>
@@ -66,44 +66,48 @@ export function Hero() {
               className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${
                 isDark
                   ? "saturate-[1.05] brightness-[1.05]"
-                  : "saturate-[1.1] brightness-[1.15]"
+                  : "saturate-[1.3] brightness-[1.1]"
               } ${meshVisible ? baseOpacity : "opacity-0"}`}
               colors={[...palette]}
-              speed={reduceMotion ? 0 : 0.25}
-              distortion={isDark ? 0.55 : 0.7}
-              swirl={isDark ? 0.25 : 0.35}
-              grainOverlay={isDark ? 0.08 : 0.1}
+              speed={reduceMotion ? 0 : (isDark ? 0.25 : 0.3)}
+              distortion={isDark ? 0.55 : 0.75}
+              swirl={isDark ? 0.25 : 0.4}
+              grainOverlay={isDark ? 0.08 : 0.12}
               style={{ backgroundColor: isDark ? "#0f172a" : "#fff8f1" }}
             />
             <MeshGradient
-              className={`absolute inset-0 h-full w-full mix-blend-screen transition-opacity duration-700 ${
-                isDark ? "brightness-[1.05]" : "brightness-[1.15]"
+              className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${
+                isDark
+                  ? "mix-blend-screen brightness-[1.05]"
+                  : "mix-blend-soft-light brightness-[1.2] saturate-[1.3]"
               } ${meshVisible ? overlayOpacity : "opacity-0"}`}
               colors={[...overlayPalette]}
-              speed={reduceMotion ? 0 : 0.18}
-              distortion={0.9}
-              swirl={0.5}
-              grainOverlay={isDark ? 0.12 : 0.14}
+              speed={reduceMotion ? 0 : (isDark ? 0.18 : 0.22)}
+              distortion={isDark ? 0.9 : 1.0}
+              swirl={isDark ? 0.5 : 0.6}
+              grainOverlay={isDark ? 0.12 : 0.15}
               style={{ backgroundColor: "transparent" }}
             />
           </>
         ) : null}
         <div
-          className="absolute inset-0 opacity-90 backdrop-blur-[12px]"
+          className={`absolute inset-0 backdrop-blur-[6px] ${
+            isDark ? "opacity-90" : "opacity-40"
+          }`}
           style={{
             background: isDark
               ? "radial-gradient(circle at 70% 30%, rgba(134, 174, 221, 0.18), transparent 42%), radial-gradient(circle at 30% 80%, rgba(250, 210, 173, 0.14), transparent 38%)"
-              : "radial-gradient(circle at 24% 24%, rgba(250, 210, 173, 0.22), transparent 55%), radial-gradient(circle at 78% 20%, rgba(134, 174, 221, 0.16), transparent 58%)",
+              : "radial-gradient(circle at 24% 24%, rgba(248, 215, 174, 0.5), transparent 55%), radial-gradient(circle at 78% 20%, rgba(136, 171, 219, 0.45), transparent 58%), radial-gradient(circle at 50% 50%, rgba(169, 184, 206, 0.35), transparent 60%)",
           }}
         />
         <div
           className={`absolute inset-0 bg-gradient-to-b from-background/0 ${
-            isDark ? "via-background/20" : "via-background/55"
+            isDark ? "via-background/20" : "via-background/10"
           } to-background`}
         />
       </div>
 
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-16 md:py-24">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 pt-48 pb-16 md:py-24">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 12 }}
           animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
@@ -114,13 +118,13 @@ export function Hero() {
             Licensed custodian · SFC CE code AFQ783
           </Badge>
 
-          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-foreground opacity-100 md:text-6xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-foreground opacity-100 md:mt-6 md:text-6xl">
             Built on trust. Driven by vision.
           </h1>
 
           <p
             className={`mt-5 text-base leading-relaxed md:text-lg ${
-              isDark ? "text-muted-foreground" : "text-foreground/75"
+              isDark ? "text-foreground/90" : "text-foreground/75"
             }`}
           >
             CWB Hong Kong is an independent licensed custodian and investment
@@ -168,7 +172,7 @@ export function Hero() {
                 <div className="text-sm font-medium">Safe custody</div>
                 <div
                   className={`text-sm leading-relaxed ${
-                    isDark ? "text-muted-foreground" : "text-foreground/75"
+                    isDark ? "text-foreground/90" : "text-foreground/75"
                   }`}
                 >
                   Segregated safekeeping with top-tier global custodians.
@@ -186,7 +190,7 @@ export function Hero() {
                 <div className="text-sm font-medium">Open architecture</div>
                 <div
                   className={`text-sm leading-relaxed ${
-                    isDark ? "text-muted-foreground" : "text-foreground/75"
+                    isDark ? "text-foreground/90" : "text-foreground/75"
                   }`}
                 >
                   Access to public and private opportunities across markets.
@@ -204,7 +208,7 @@ export function Hero() {
                 <div className="text-sm font-medium">Robust controls</div>
                 <div
                   className={`text-sm leading-relaxed ${
-                    isDark ? "text-muted-foreground" : "text-foreground/75"
+                    isDark ? "text-foreground/90" : "text-foreground/75"
                   }`}
                 >
                   Ring-fenced assets, segregation checks, and clean oversight.

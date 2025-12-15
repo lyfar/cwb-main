@@ -12,6 +12,8 @@ import {
 } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
+import { whatWeDoItems } from "@/lib/what-we-do"
+import { WhatWeDoMenu } from "@/components/site/what-we-do-menu"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -28,13 +30,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-
-const navItems = [
-  { href: "/who-we-are", label: "Who we are" },
-  { href: "/who-we-serve", label: "Who we serve" },
-  { href: "/what-we-do", label: "What we do" },
-  { href: "/contacts", label: "Contacts" },
-] as const
 
 function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme()
@@ -101,6 +96,13 @@ function HeaderNavLink({
 
 export function SiteHeader() {
   const [open, setOpen] = React.useState(false)
+  const pathname = usePathname() ?? "/"
+  const whatWeDoActive =
+    pathname === "/what-we-do" || pathname.startsWith("/what-we-do/")
+  const whatWeDoLinks = React.useMemo(
+    () => whatWeDoItems.filter((item) => item.id !== "overview"),
+    []
+  )
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border/20 bg-transparent backdrop-blur-xl">
@@ -119,13 +121,15 @@ export function SiteHeader() {
         </div>
 
         <nav className="hidden items-center gap-1 md:flex">
-          {navItems.map((item) => (
-            <HeaderNavLink
-              key={item.href}
-              href={item.href}
-              label={item.label}
-            />
-          ))}
+          <HeaderNavLink href="/who-we-are" label="Who we are" />
+          <HeaderNavLink href="/who-we-serve" label="Who we serve" />
+          <WhatWeDoMenu
+            mode="label"
+            label="What we do"
+            triggerVariant={whatWeDoActive ? "secondary" : "ghost"}
+            className={cn("justify-start", whatWeDoActive && "font-medium")}
+          />
+          <HeaderNavLink href="/contacts" label="Contacts" />
           <Separator orientation="vertical" className="mx-1 h-6" />
           <ThemeToggle />
           <Button asChild size="sm">
@@ -152,15 +156,47 @@ export function SiteHeader() {
               </div>
               <Separator />
               <div className="flex flex-col gap-1 p-3">
-                {navItems.map((item) => (
-                  <SheetClose asChild key={item.href}>
-                    <HeaderNavLink
-                      href={item.href}
-                      label={item.label}
-                      onNavigate={() => setOpen(false)}
-                    />
-                  </SheetClose>
-                ))}
+                <SheetClose asChild>
+                  <HeaderNavLink
+                    href="/who-we-are"
+                    label="Who we are"
+                    onNavigate={() => setOpen(false)}
+                  />
+                </SheetClose>
+                <SheetClose asChild>
+                  <HeaderNavLink
+                    href="/who-we-serve"
+                    label="Who we serve"
+                    onNavigate={() => setOpen(false)}
+                  />
+                </SheetClose>
+                <Separator className="my-2" />
+                <SheetClose asChild>
+                  <HeaderNavLink
+                    href="/what-we-do"
+                    label="What we do"
+                    onNavigate={() => setOpen(false)}
+                  />
+                </SheetClose>
+                <div className="ml-3 flex flex-col gap-1 border-l border-border/40 pl-3">
+                  {whatWeDoLinks.map((item) => (
+                    <SheetClose asChild key={item.href}>
+                      <HeaderNavLink
+                        href={item.href}
+                        label={item.title}
+                        onNavigate={() => setOpen(false)}
+                      />
+                    </SheetClose>
+                  ))}
+                </div>
+                <Separator className="my-2" />
+                <SheetClose asChild>
+                  <HeaderNavLink
+                    href="/contacts"
+                    label="Contacts"
+                    onNavigate={() => setOpen(false)}
+                  />
+                </SheetClose>
                 <Separator className="my-2" />
                 <SheetClose asChild>
                   <Button asChild onClick={() => setOpen(false)}>

@@ -16,25 +16,25 @@ const capabilities = [
   {
     title: "Safe custody",
     description: "Secure, segregated safekeeping with top-tier global partners.",
-    href: "/what-we-do",
+    href: "/what-we-do/safe-custody",
     icon: VaultIcon,
   },
   {
     title: "Asset management",
     description: "Open-architecture access to public and private opportunities.",
-    href: "/what-we-do",
+    href: "/what-we-do/asset-management",
     icon: ChartLineUpIcon,
   },
   {
     title: "Brokerage",
     description: "Global execution with APAC and emerging market coverage.",
-    href: "/what-we-do",
+    href: "/what-we-do/brokerage",
     icon: ArrowsLeftRightIcon,
   },
   {
     title: "Banking services",
     description: "Streamlined payments across major currencies.",
-    href: "/what-we-do",
+    href: "/what-we-do/banking-services",
     icon: BankIcon,
   },
 ] as const
@@ -51,7 +51,7 @@ export default function HomePage() {
             <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
               Institutional-grade custody. Personalised guidance.
             </h2>
-            <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
+            <p className="text-muted-foreground dark:text-foreground/90 max-w-2xl text-sm leading-relaxed">
               Safe custody, brokerage, asset management, and banking services —
               designed for institutional and private clients.
             </p>
@@ -70,7 +70,7 @@ export default function HomePage() {
                 <capability.icon className="text-primary size-6" />
                 <CardTitle className="text-base">{capability.title}</CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-sm leading-relaxed">
+              <CardContent className="text-muted-foreground dark:text-foreground/90 text-sm leading-relaxed">
                 {capability.description}
                 <div className="mt-4">
                   <Button asChild variant="ghost" className="px-0">
@@ -88,7 +88,7 @@ export default function HomePage() {
           <CardHeader>
             <CardTitle className="text-base">Built on trust</CardTitle>
           </CardHeader>
-          <CardContent className="text-muted-foreground grid gap-3 text-sm leading-relaxed md:grid-cols-2">
+          <CardContent className="text-muted-foreground dark:text-foreground/90 grid gap-3 text-sm leading-relaxed md:grid-cols-2">
             <div>
               We maintain segregated custody arrangements and robust operational
               controls to keep client assets ring-fenced.
