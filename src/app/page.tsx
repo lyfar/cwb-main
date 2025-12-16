@@ -52,8 +52,10 @@ function CapabilityTile({ capability }: { capability: Capability }) {
   return (
     <Card
       variant="glass"
-      className="relative h-full overflow-hidden"
+      className="relative h-full overflow-hidden group cursor-pointer transition-all hover:shadow-lg"
+      asChild
     >
+      <Link href={capability.href}>
       {capability.image ? (
         <>
           <Image
@@ -96,12 +98,13 @@ function CapabilityTile({ capability }: { capability: Capability }) {
             </div>
           )}
           <div className="mt-auto flex justify-end">
-            <Button asChild variant={hasImage ? "secondary" : "ghost"}>
-              <Link href={capability.href}>Learn more</Link>
+            <Button variant={hasImage ? "secondary" : "ghost"} className="group-hover:bg-primary/10">
+              Learn more
             </Button>
           </div>
         </CardContent>
       </div>
+      </Link>
     </Card>
   )
 }
