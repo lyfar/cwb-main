@@ -2,8 +2,12 @@
 
 import * as React from "react"
 import { usePathname } from "next/navigation"
+import { FilePdf } from "@phosphor-icons/react"
 
-import { CalculatorWorkspace } from "@/app/calculator/_components/calculator-workspace"
+import {
+  CalculatorWorkspaceWithRef,
+  type CalculatorWorkspaceHandle,
+} from "@/app/calculator/_components/calculator-workspace"
 import { getCalculatorCopy } from "@/app/calculator/_lib/copy"
 import { getLocaleFromPathname } from "@/lib/locale"
 import { Badge } from "@/components/ui/badge"
@@ -37,7 +41,10 @@ function PasswordGate({
   }
 
   return (
-    <main className="mx-auto w-full max-w-none px-6 pt-24 pb-14 md:pt-28 md:pb-16 lg:px-10">
+    <main
+      data-calculator-page
+      className="mx-auto w-full max-w-none px-6 pt-24 pb-14 md:pt-28 md:pb-16 lg:px-10"
+    >
       <header className="space-y-3">
         <Badge variant="outline">{copy.badgeInternal}</Badge>
         <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
@@ -80,6 +87,7 @@ export function CalculatorClient() {
   const locale = getLocaleFromPathname(pathname)
   const copy = getCalculatorCopy(locale)
   const [unlocked, setUnlocked] = React.useState(false)
+  const workspaceRef = React.useRef<CalculatorWorkspaceHandle | null>(null)
 
   React.useEffect(() => {
     setUnlocked(window.localStorage.getItem(PASSWORD_STORAGE_KEY) === "1")
@@ -100,8 +108,14 @@ export function CalculatorClient() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-none px-6 pt-24 pb-14 md:pt-28 md:pb-16 lg:px-10">
-      <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <main
+      data-calculator-page
+      className="mx-auto w-full max-w-none px-6 pt-24 pb-14 md:pt-28 md:pb-16 lg:px-10"
+    >
+      <header
+        data-calculator-app
+        className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between"
+      >
         <div className="space-y-2">
           <Badge variant="outline">{copy.badgeInternal}</Badge>
           <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
@@ -111,13 +125,22 @@ export function CalculatorClient() {
             {copy.headerDescription}
           </p>
         </div>
-        <Button variant="outline" onClick={lock}>
-          {copy.lock}
-        </Button>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <Button
+            variant="outline"
+            onClick={() => workspaceRef.current?.exportPdf()}
+          >
+            <FilePdf className="size-5" />
+            {copy.exportPdf}
+          </Button>
+          <Button variant="outline" onClick={lock}>
+            {copy.lock}
+          </Button>
+        </div>
       </header>
 
-      <div className="mt-10">
-        <CalculatorWorkspace />
+      <div data-calculator-content className="mt-10">
+        <CalculatorWorkspaceWithRef ref={workspaceRef} />
       </div>
     </main>
   )

@@ -7,6 +7,7 @@ import type { FeeScheduleItem } from "@/lib/fee-schedule"
 import { getCalculatorCopy } from "@/app/calculator/_lib/copy"
 import { formatUSD } from "@/app/calculator/_lib/format"
 import { panelShell } from "@/app/calculator/_lib/panel-shell"
+import { formatTradeAssetLabel } from "@/app/calculator/_lib/trade-labels"
 import type { TradeLine, SelectPayload } from "@/app/calculator/_types"
 import type { TradePeriod } from "@/app/calculator/_lib/scenario"
 import { getLocaleFromPathname } from "@/lib/locale"
@@ -143,7 +144,7 @@ export function TradingExecutionPanel({
                       <SelectContent>
                         {brokerageItems.map((item) => (
                           <SelectItem key={item.id} value={item.id}>
-                            {item.asset}
+                            {formatTradeAssetLabel(item.asset, locale)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -220,7 +221,7 @@ export function TradingExecutionPanel({
                               type="number"
                               min={0}
                               step="any"
-                              placeholder="Rate %"
+                              placeholder={copy.tradingPanel.rateOverridePlaceholder}
                               value={row.line.rateOverrideInput}
                               onChange={(event) =>
                                 updateTradeLine(row.line.key, (line) => ({

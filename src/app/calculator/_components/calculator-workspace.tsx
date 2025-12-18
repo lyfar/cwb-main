@@ -14,6 +14,7 @@ import {
   OperationalServiceFeesTable,
   TradingExecutionCostsTable,
 } from "@/app/calculator/_components/fee-tables"
+import { CalculatorPdfReport } from "@/app/calculator/_components/calculator-pdf-report"
 import { ManagementFeesPanel } from "@/app/calculator/_components/management-fees-panel"
 import {
   TradingExecutionPanel,
@@ -38,6 +39,10 @@ const MANAGEMENT_IDS = [
   "advisory",
 ] as const
 
+export type CalculatorWorkspaceHandle = {
+  exportPdf: () => void
+}
+
 function findItem(id: string) {
   return feeSchedule.find((item) => item.id === id)
 }
@@ -53,11 +58,12 @@ function ensureBrokerageId(id: string) {
 
 function computeMoney(
   itemId: string,
-  inputs: Parameters<typeof computeFee>[1]
+  inputs: Parameters<typeof computeFee>[1],
+  options?: Parameters<typeof computeFee>[2]
 ) {
   const item = findItem(itemId)
   if (!item) return null
-  const result = computeFee(item, inputs)
+  const result = computeFee(item, inputs, options)
   if (result.kind === "note") return null
   return result
 }
@@ -236,7 +242,7 @@ export function CalculatorWorkspace() {
         const result = computeFee(item, {
           contracts: contractsPerTrade,
           contractType: line.contractType,
-        })
+        }, { locale })
         const perTradeUSD = result.kind === "money" ? result.perInvoiceUSD : 0
         return {
           line,
@@ -261,7 +267,7 @@ export function CalculatorWorkspace() {
         amountUSD,
         tieringMode: "bracket",
         rateOverride: overrideRate,
-      })
+      }, { locale })
       const perTradeUSD = result.kind === "money" ? result.perInvoiceUSD : 0
 
       return {
@@ -276,7 +282,7 @@ export function CalculatorWorkspace() {
         isContract,
       }
     })
-  }, [tradeLines])
+  }, [locale, tradeLines])
 
   const tradingTotalUSD = tradeLineComputations.reduce(
     (total, row) => total + row.totalUSD,
@@ -291,66 +297,133 @@ export function CalculatorWorkspace() {
     annualisedTradingUSD == null ? null : annualisedTradingUSD + cashTransferTotalUSD
 
   return (
-    <div className="space-y-12">
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
-        <AnnualManagementFeesTable selectedId={selectedId} onSelect={handleSelect} />
-        <ManagementFeesPanel
-          portfolioValueInput={portfolioValueInput}
-          setPortfolioValueInput={setPortfolioValueInput}
-          tieringMode={tieringMode}
-          setTieringMode={setTieringMode}
-          rows={managementRows}
-          quarterlyRecurringUSD={quarterlyRecurringUSD}
-          annualRecurringUSD={annualRecurringUSD}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
-        <TradingExecutionCostsTable selectedId={selectedId} onSelect={handleSelect} />
-        <TradingExecutionPanel
-          brokerageItems={brokerageItems}
-          tradeLines={tradeLines}
-          computations={tradeLineComputations}
-          tradingTotalUSD={tradingTotalUSD}
-          tradePeriod={tradePeriod}
-          setTradePeriod={setTradePeriod}
-          addTradeLine={addTradeLine}
-          removeTradeLine={removeTradeLine}
-          updateTradeLine={updateTradeLine}
-          onSelect={handleSelect}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
-        <OperationalServiceFeesTable selectedId={selectedId} onSelect={handleSelect} />
-        <div className="space-y-8">
-          <OperationalServicePanel
-            depositValueInput={depositValueInput}
-            setDepositValueInput={setDepositValueInput}
-            depositCountInput={depositCountInput}
-            setDepositCountInput={setDepositCountInput}
-            administrationCountInput={administrationCountInput}
-            setAdministrationCountInput={setAdministrationCountInput}
-            onboardingCountInput={onboardingCountInput}
-            setOnboardingCountInput={setOnboardingCountInput}
-            cashTransfersCountInput={cashTransfersCountInput}
-            setCashTransfersCountInput={setCashTransfersCountInput}
-            passThroughCostInput={passThroughCostInput}
-            setPassThroughCostInput={setPassThroughCostInput}
-            annualServiceUSD={annualServiceUSD}
-            oneOffServiceUSD={oneOffServiceUSD}
+    <>
+      <div data-calculator-app className="space-y-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
+          <AnnualManagementFeesTable
+            selectedId={selectedId}
+            onSelect={handleSelect}
           />
-          <ScenarioSummaryPanel
+          <ManagementFeesPanel
+            portfolioValueInput={portfolioValueInput}
+            setPortfolioValueInput={setPortfolioValueInput}
+            tieringMode={tieringMode}
+            setTieringMode={setTieringMode}
+            rows={managementRows}
             quarterlyRecurringUSD={quarterlyRecurringUSD}
             annualRecurringUSD={annualRecurringUSD}
-            annualServiceUSD={annualServiceUSD}
-            transactionalTotalUSD={transactionalTotalUSD}
-            annualisedTransactionUSD={annualisedTransactionUSD}
-            oneOffServiceUSD={oneOffServiceUSD}
-            tradePeriod={tradePeriod}
           />
         </div>
+
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
+          <TradingExecutionCostsTable
+            selectedId={selectedId}
+            onSelect={handleSelect}
+          />
+          <TradingExecutionPanel
+            brokerageItems={brokerageItems}
+            tradeLines={tradeLines}
+            computations={tradeLineComputations}
+            tradingTotalUSD={tradingTotalUSD}
+            tradePeriod={tradePeriod}
+            setTradePeriod={setTradePeriod}
+            addTradeLine={addTradeLine}
+            removeTradeLine={removeTradeLine}
+            updateTradeLine={updateTradeLine}
+            onSelect={handleSelect}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
+          <OperationalServiceFeesTable
+            selectedId={selectedId}
+            onSelect={handleSelect}
+          />
+          <div className="space-y-8">
+            <OperationalServicePanel
+              depositValueInput={depositValueInput}
+              setDepositValueInput={setDepositValueInput}
+              depositCountInput={depositCountInput}
+              setDepositCountInput={setDepositCountInput}
+              administrationCountInput={administrationCountInput}
+              setAdministrationCountInput={setAdministrationCountInput}
+              onboardingCountInput={onboardingCountInput}
+              setOnboardingCountInput={setOnboardingCountInput}
+              cashTransfersCountInput={cashTransfersCountInput}
+              setCashTransfersCountInput={setCashTransfersCountInput}
+              passThroughCostInput={passThroughCostInput}
+              setPassThroughCostInput={setPassThroughCostInput}
+              annualServiceUSD={annualServiceUSD}
+              oneOffServiceUSD={oneOffServiceUSD}
+            />
+            <ScenarioSummaryPanel
+              quarterlyRecurringUSD={quarterlyRecurringUSD}
+              annualRecurringUSD={annualRecurringUSD}
+              annualServiceUSD={annualServiceUSD}
+              transactionalTotalUSD={transactionalTotalUSD}
+              annualisedTransactionUSD={annualisedTransactionUSD}
+              oneOffServiceUSD={oneOffServiceUSD}
+              tradePeriod={tradePeriod}
+            />
+          </div>
+        </div>
       </div>
-    </div>
+
+      <div data-calculator-report>
+        <CalculatorPdfReport
+          locale={locale}
+          generatedAt={new Date()}
+          selectedId={selectedId}
+          tieringMode={tieringMode}
+          portfolioValueUSD={portfolioValueUSD}
+          managementRows={managementRows}
+          quarterlyRecurringUSD={quarterlyRecurringUSD}
+          annualRecurringUSD={annualRecurringUSD}
+          tradePeriod={tradePeriod}
+          tradeLineComputations={tradeLineComputations}
+          tradingTotalUSD={tradingTotalUSD}
+          annualisedTradingUSD={annualisedTradingUSD}
+          cashTransfersCount={cashTransfersCount}
+          cashTransferTotalUSD={cashTransferTotalUSD}
+          depositValueUSD={depositValueUSD}
+          depositCount={depositCount}
+          administrationCount={administrationCount}
+          onboardingCount={onboardingCount}
+          passThroughCostUSD={Number.isFinite(passThroughCostUSD) ? passThroughCostUSD : 0}
+          annualServiceUSD={annualServiceUSD}
+          oneOffServiceUSD={oneOffServiceUSD}
+          transactionalTotalUSD={transactionalTotalUSD}
+          annualisedTransactionUSD={annualisedTransactionUSD}
+        />
+      </div>
+    </>
   )
 }
+
+export const CalculatorWorkspaceWithRef = React.forwardRef<CalculatorWorkspaceHandle, {}>(
+  function CalculatorWorkspaceWithRef(_props, ref) {
+    const pathname = usePathname()
+    const locale = getLocaleFromPathname(pathname)
+
+    React.useImperativeHandle(
+      ref,
+      () => ({
+        exportPdf() {
+          const previousTitle = document.title
+          const dateStamp = new Date().toISOString().slice(0, 10)
+          document.title =
+            locale === "ru"
+              ? `CWB — Оценка комиссий — ${dateStamp}`
+              : `CWB — Fee estimate — ${dateStamp}`
+
+          window.scrollTo(0, 0)
+          window.print()
+          document.title = previousTitle
+        },
+      }),
+      [locale]
+    )
+
+    return <CalculatorWorkspace />
+  }
+)

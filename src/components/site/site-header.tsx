@@ -69,7 +69,10 @@ export function SiteHeader() {
   )
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-border/20 bg-transparent backdrop-blur-xl">
+    <header
+      data-site-header
+      className="fixed inset-x-0 top-0 z-50 border-b border-border/20 bg-transparent backdrop-blur-xl"
+    >
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-6 py-3">
         <div className="flex items-center gap-2">
           <Link href={localizeHref("/", locale)} className="flex items-center gap-2">

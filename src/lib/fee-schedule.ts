@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/locale"
+
 export type FeeFrequency =
   | "Quarterly"
   | "Annual"
@@ -325,11 +327,15 @@ function invoicesPerYear(frequency: FeeFrequency) {
 function computeTieredPercentFee(
   amountUSD: number,
   tiers: Tier[],
-  mode: TieringMode
+  mode: TieringMode,
+  locale: Locale
 ): { feeUSD: number; rateLabel: string; breakdown?: FeeBreakdownLine[] } {
   if (tiers.length === 0) {
     return { feeUSD: 0, rateLabel: "—" }
   }
+
+  const aboveLabel = locale === "ru" ? "Свыше" : "Above"
+  const upToLabel = locale === "ru" ? "До" : "Up to"
 
   if (mode === "progressive") {
     const breakdown: FeeBreakdownLine[] = []
@@ -348,7 +354,7 @@ function computeTieredPercentFee(
       breakdown.push({
         label:
           tier.upToUSD == null
-            ? `Above USD ${previousCap.toLocaleString()}`
+            ? `${aboveLabel} USD ${previousCap.toLocaleString()}`
             : `USD ${previousCap.toLocaleString()}–${tier.upToUSD.toLocaleString()}`,
         baseUSD: tierBase,
         rate: tier.rate,
@@ -363,7 +369,10 @@ function computeTieredPercentFee(
     const maxRate = tiers.find((tier) => tier.upToUSD == null)?.rate ?? tiers[tiers.length - 1].rate
     return {
       feeUSD: total,
-      rateLabel: `Blended (max tier ${formatPercent(maxRate)})`,
+      rateLabel:
+        locale === "ru"
+          ? `Ступенчатая ставка (макс. ставка ${formatPercent(maxRate)})`
+          : `Blended (max tier ${formatPercent(maxRate)})`,
       breakdown,
     }
   }
@@ -377,10 +386,10 @@ function computeTieredPercentFee(
   const previousCap = selectedIndex > 0 ? tiers[selectedIndex - 1]?.upToUSD ?? 0 : 0
   const label =
     selectedTier.upToUSD == null
-      ? `Above USD ${formatUSD(previousCap)}`
+      ? `${aboveLabel} USD ${formatUSD(previousCap)}`
       : previousCap > 0
         ? `USD ${formatUSD(previousCap)}–${formatUSD(selectedTier.upToUSD)}`
-        : `Up to USD ${formatUSD(selectedTier.upToUSD)}`
+        : `${upToLabel} USD ${formatUSD(selectedTier.upToUSD)}`
 
   return {
     feeUSD: amountUSD * rate,
@@ -396,14 +405,36 @@ function formatPercent(value: number) {
   return `${(value * 100).toFixed(2)}%`
 }
 
+export type ComputeFeeOptions = {
+  locale?: Locale
+}
+
+function getLocaleFromOptions(options?: ComputeFeeOptions): Locale {
+  return options?.locale === "ru" ? "ru" : "en"
+}
+
+function formatContractType(contractType: "options" | "futures", locale: Locale) {
+  if (locale !== "ru") return contractType
+  return contractType === "options" ? "опционы" : "фьючерсы"
+}
+
 export function computeFee(
   item: FeeScheduleItem,
-  inputs: FeeInputs
+  inputs: FeeInputs,
+  options?: ComputeFeeOptions
 ): FeeComputation {
+  const locale = getLocaleFromOptions(options)
   const tieringMode = inputs.tieringMode ?? "bracket"
 
   if (item.formula.kind === "pass_through") {
-    return { kind: "note", frequency: item.frequency, note: item.formula.note }
+    return {
+      kind: "note",
+      frequency: item.frequency,
+      note:
+        locale === "ru"
+          ? "Возмещаемые расходы по себестоимости."
+          : item.formula.note,
+    }
   }
 
   let perInvoiceUSD = 0
@@ -423,7 +454,10 @@ export function computeFee(
         ? item.formula.futureUSD
         : item.formula.optionUSD
     perInvoiceUSD = contracts * perContractUSD
-    rateLabel = `USD ${formatUSD(perContractUSD)} / contract (${contractType})`
+    rateLabel =
+      locale === "ru"
+        ? `USD ${formatUSD(perContractUSD)} / контракт (${formatContractType(contractType, locale)})`
+        : `USD ${formatUSD(perContractUSD)} / contract (${contractType})`
   } else {
     const amountUSD = clampNonNegative(inputs.amountUSD ?? 0)
     basisAmountUSD = amountUSD
@@ -432,7 +466,8 @@ export function computeFee(
       const computed = computeTieredPercentFee(
         amountUSD,
         item.formula.tiers,
-        tieringMode
+        tieringMode,
+        locale
       )
       rateLabel = computed.rateLabel
       breakdown = computed.breakdown
@@ -475,7 +510,10 @@ export function computeFee(
               item.formula.maxRate,
               Math.max(item.formula.minRate, overrideRate)
             )
-      rateLabel = `${formatPercent(item.formula.minRate)}–${formatPercent(item.formula.maxRate)} (using ${formatPercent(clampedRate)})`
+      rateLabel =
+        locale === "ru"
+          ? `${formatPercent(item.formula.minRate)}–${formatPercent(item.formula.maxRate)} (расчёт по ${formatPercent(clampedRate)})`
+          : `${formatPercent(item.formula.minRate)}–${formatPercent(item.formula.maxRate)} (using ${formatPercent(clampedRate)})`
       const rawFee = amountUSD * clampedRate
       if (item.formula.basis === "per_annum") {
         const perYear = invoicesPerYear(item.frequency)

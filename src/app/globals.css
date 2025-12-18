@@ -280,3 +280,45 @@
     color: transparent;
   }
 }
+
+[data-calculator-report] {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 12mm;
+  }
+
+  body {
+    background-image: none !important;
+    background-attachment: initial !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  main[data-calculator-page] {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  main[data-calculator-page] [data-calculator-content] {
+    margin-top: 0 !important;
+  }
+
+  [data-site-header],
+  [data-site-footer],
+  [data-calculator-app] {
+    display: none !important;
+  }
+
+  [data-calculator-report] {
+    display: block !important;
+  }
+
+  .print-break-after-page {
+    break-after: page;
+    page-break-after: always;
+  }
+}

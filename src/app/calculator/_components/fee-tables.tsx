@@ -252,11 +252,11 @@ function translateAssetClass(assetClass: string, locale: Locale) {
 
   const map: Record<string, string> = {
     "Equities & ETFs": "Акции и ETF",
-    "Bonds / Fixed income": "Облигации / Fixed income",
+    "Bonds / Fixed income": "Облигации",
     Funds: "Фонды",
     Derivatives: "Деривативы",
     Currencies: "Валюты",
-    Trading: "Торги",
+    Trading: "Торговые операции",
   }
 
   return map[assetClass] ?? assetClass
@@ -270,12 +270,12 @@ function translateRegion(region: string, locale: Locale) {
     "HK equities": "Акции Гонконга",
     "Malaysia / Japan / Taiwan equities": "Акции Малайзии / Японии / Тайваня",
     "China Stock Connect": "China Stock Connect",
-    "US treasuries": "US Treasuries",
+    "US treasuries": "Казначейские облигации США",
     "Other bonds": "Прочие облигации",
     "Mutual funds": "Паевые фонды",
     "Money market funds": "Фонды денежного рынка",
     "Alternative funds": "Альтернативные фонды",
-    "Listed options": "Листинговые опционы",
+    "Listed options": "Биржевые опционы",
     Futures: "Фьючерсы",
     "Structured products, certificates & other derivatives":
       "Структурные продукты, сертификаты и др. деривативы",
@@ -285,7 +285,7 @@ function translateRegion(region: string, locale: Locale) {
     Annual: "Год",
     "Flat fee": "Фикс.",
     "Cash (Client money)": "Денежные средства (клиентские)",
-    "Pass-through": "Pass-through",
+    "Pass-through": "Возмещаемые расходы",
   }
 
   return map[region] ?? region
@@ -533,7 +533,7 @@ export function OperationalServiceFeesTable({
         case "cash-transfer":
           return "Переводы"
         case "expenses-pass-through":
-          return "Pass-through"
+          return "Возмещаемые расходы"
         default:
           return item.operation
       }
@@ -560,7 +560,7 @@ export function OperationalServiceFeesTable({
     if (item.formula.kind === "flat_usd")
       return locale === "ru" ? "Фикс." : "Flat fee"
     if (item.formula.kind === "pass_through")
-      return locale === "ru" ? "At cost" : "At cost"
+      return locale === "ru" ? "По себестоимости" : "At cost"
     return "—"
   }
 
@@ -573,7 +573,8 @@ export function OperationalServiceFeesTable({
 
   const description = (item: FeeScheduleItem) => {
     if (locale === "ru") {
-      if (item.id === "expenses-pass-through") return "Сторонние расходы / third-party"
+      if (item.id === "expenses-pass-through")
+        return "Возмещаемые расходы (сторонние и гос. сборы)"
       if (item.id === "complex-onboarding") return "Сложный онбординг"
       if (item.id === "administration") return "Администрирование"
       if (item.id === "cash-transfer") return "Денежный перевод"

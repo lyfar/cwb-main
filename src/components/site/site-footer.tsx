@@ -32,7 +32,10 @@ export function SiteFooter() {
   const copy = getCopy(locale)
 
   return (
-    <footer className="bg-background/80 supports-[backdrop-filter]:bg-background/60 border-t">
+    <footer
+      data-site-footer
+      className="bg-background/80 supports-[backdrop-filter]:bg-background/60 border-t"
+    >
       <div className="mx-auto w-full max-w-6xl px-6 py-10">
         <div className="grid gap-10 md:grid-cols-3">
           <div className="space-y-3">
