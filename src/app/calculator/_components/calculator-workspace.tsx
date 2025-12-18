@@ -280,8 +280,9 @@ export function CalculatorWorkspace() {
   const transactionalTotalUSD = tradingTotalUSD + cashTransferTotalUSD
 
   const multiplier = periodMultiplier(tradePeriod)
+  const annualisedTradingUSD = multiplier == null ? null : tradingTotalUSD * multiplier
   const annualisedTransactionUSD =
-    multiplier == null ? null : transactionalTotalUSD * multiplier
+    annualisedTradingUSD == null ? null : annualisedTradingUSD + cashTransferTotalUSD
 
   return (
     <div className="space-y-12">

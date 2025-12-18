@@ -81,8 +81,8 @@ export const feeSchedule: FeeScheduleItem[] = [
       basis: "per_annum",
       tiers: [
         { upToUSD: 10_000_000, rate: 0.005 },
-        { upToUSD: 25_000_000, rate: 0.0065 },
-        { upToUSD: 50_000_000, rate: 0.004 },
+        { upToUSD: 25_000_000, rate: 0.004 },
+        { upToUSD: 50_000_000, rate: 0.0035 },
         { upToUSD: null, rate: 0.0025 },
       ],
     },

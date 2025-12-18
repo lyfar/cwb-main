@@ -113,7 +113,7 @@ export function OperationalServicePanel({
 
         <div className="grid gap-3 md:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="cash-transfers">Cash transfers · count</Label>
+            <Label htmlFor="cash-transfers">Cash transfers (annual) · count</Label>
             <Input
               id="cash-transfers"
               inputMode="numeric"
