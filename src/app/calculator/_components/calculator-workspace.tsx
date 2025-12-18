@@ -28,6 +28,7 @@ import {
   type TradePeriod,
 } from "@/app/calculator/_lib/scenario"
 import type { SelectPayload, TradeLine } from "@/app/calculator/_types"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const MANAGEMENT_IDS = [
   "discretionary-mandate",
@@ -317,32 +318,72 @@ export function CalculatorWorkspace() {
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
         <OperationalServiceFeesTable selectedId={selectedId} onSelect={handleSelect} />
-        <div className="space-y-8">
-          <OperationalServicePanel
-            depositValueInput={depositValueInput}
-            setDepositValueInput={setDepositValueInput}
-            depositCountInput={depositCountInput}
-            setDepositCountInput={setDepositCountInput}
-            administrationCountInput={administrationCountInput}
-            setAdministrationCountInput={setAdministrationCountInput}
-            onboardingCountInput={onboardingCountInput}
-            setOnboardingCountInput={setOnboardingCountInput}
-            cashTransfersCountInput={cashTransfersCountInput}
-            setCashTransfersCountInput={setCashTransfersCountInput}
-            passThroughCostInput={passThroughCostInput}
-            setPassThroughCostInput={setPassThroughCostInput}
-            annualServiceUSD={annualServiceUSD}
-            oneOffServiceUSD={oneOffServiceUSD}
-          />
-          <ScenarioSummaryPanel
-            quarterlyRecurringUSD={quarterlyRecurringUSD}
-            annualRecurringUSD={annualRecurringUSD}
-            annualServiceUSD={annualServiceUSD}
-            transactionalTotalUSD={transactionalTotalUSD}
-            annualisedTransactionUSD={annualisedTransactionUSD}
-            oneOffServiceUSD={oneOffServiceUSD}
-            tradePeriod={tradePeriod}
-          />
+        <div>
+          <div className="lg:hidden">
+            <Tabs defaultValue="settings" className="w-full">
+              <TabsList className="w-full">
+                <TabsTrigger value="settings">Settings</TabsTrigger>
+                <TabsTrigger value="summary">Summary</TabsTrigger>
+              </TabsList>
+              <TabsContent value="settings" className="mt-4">
+                <OperationalServicePanel
+                  depositValueInput={depositValueInput}
+                  setDepositValueInput={setDepositValueInput}
+                  depositCountInput={depositCountInput}
+                  setDepositCountInput={setDepositCountInput}
+                  administrationCountInput={administrationCountInput}
+                  setAdministrationCountInput={setAdministrationCountInput}
+                  onboardingCountInput={onboardingCountInput}
+                  setOnboardingCountInput={setOnboardingCountInput}
+                  cashTransfersCountInput={cashTransfersCountInput}
+                  setCashTransfersCountInput={setCashTransfersCountInput}
+                  passThroughCostInput={passThroughCostInput}
+                  setPassThroughCostInput={setPassThroughCostInput}
+                  annualServiceUSD={annualServiceUSD}
+                  oneOffServiceUSD={oneOffServiceUSD}
+                />
+              </TabsContent>
+              <TabsContent value="summary" className="mt-4">
+                <ScenarioSummaryPanel
+                  quarterlyRecurringUSD={quarterlyRecurringUSD}
+                  annualRecurringUSD={annualRecurringUSD}
+                  annualServiceUSD={annualServiceUSD}
+                  transactionalTotalUSD={transactionalTotalUSD}
+                  annualisedTransactionUSD={annualisedTransactionUSD}
+                  oneOffServiceUSD={oneOffServiceUSD}
+                  tradePeriod={tradePeriod}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          <div className="hidden space-y-8 lg:block">
+            <OperationalServicePanel
+              depositValueInput={depositValueInput}
+              setDepositValueInput={setDepositValueInput}
+              depositCountInput={depositCountInput}
+              setDepositCountInput={setDepositCountInput}
+              administrationCountInput={administrationCountInput}
+              setAdministrationCountInput={setAdministrationCountInput}
+              onboardingCountInput={onboardingCountInput}
+              setOnboardingCountInput={setOnboardingCountInput}
+              cashTransfersCountInput={cashTransfersCountInput}
+              setCashTransfersCountInput={setCashTransfersCountInput}
+              passThroughCostInput={passThroughCostInput}
+              setPassThroughCostInput={setPassThroughCostInput}
+              annualServiceUSD={annualServiceUSD}
+              oneOffServiceUSD={oneOffServiceUSD}
+            />
+            <ScenarioSummaryPanel
+              quarterlyRecurringUSD={quarterlyRecurringUSD}
+              annualRecurringUSD={annualRecurringUSD}
+              annualServiceUSD={annualServiceUSD}
+              transactionalTotalUSD={transactionalTotalUSD}
+              annualisedTransactionUSD={annualisedTransactionUSD}
+              oneOffServiceUSD={oneOffServiceUSD}
+              tradePeriod={tradePeriod}
+            />
+          </div>
         </div>
       </div>
     </div>
