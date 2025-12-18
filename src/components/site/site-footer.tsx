@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import { AmbientBackgroundToggle } from "@/components/site/ambient-background-toggle"
 import { ThemeToggle } from "@/components/site/theme-toggle"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -85,9 +86,12 @@ export function SiteFooter() {
 
         <div className="text-muted-foreground flex flex-col gap-2 text-xs md:flex-row md:items-center md:justify-between">
           <div>© {year} CWB Hong Kong. All rights reserved.</div>
-          <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
             <div>Built on trust. Driven by vision.</div>
-            <ThemeToggle variant="outline" size="sm" showLabel />
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <AmbientBackgroundToggle />
+              <ThemeToggle variant="outline" size="sm" showLabel />
+            </div>
           </div>
         </div>
       </div>

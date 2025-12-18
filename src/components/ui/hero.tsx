@@ -14,18 +14,20 @@ import {
 import { useTheme } from "next-themes"
 
 import { brokeragePartners, custodyPartners, logoDevUrl } from "@/lib/partners"
+import { AMBIENT_BACKGROUND_EVENT, getAmbientBackgroundEnabled } from "@/lib/ambient-background"
+import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
 const PALETTES = {
-  light: ["#f8d7ae", "#88abdb", "#a9b8ce", "#dacabb", "#ffffff"],
-  dark: ["#0b1425", "#272c2f", "#5a87be", "#f8d7ae", "#88abdb"],
+  light: ["#f7f3e2", "#fbf8ec", "#e7d4c6", "#d9b1a6", "#99753f"],
+  dark: ["#2c351b", "#313b1f", "#3a4524", "#99753f", "#e7d4c6"],
 } as const
 
 const OVERLAY_PALETTES = {
-  light: ["#88abdb", "#f8d7ae", "#a9b8ce", "#c4c3c3"],
-  dark: ["#88abdb", "#f8d7ae", "#a9b8ce", "#0f172a"],
+  light: ["#e7d4c6", "#d9b1a6", "#99753f", "#ffffff"],
+  dark: ["#e7d4c6", "#99753f", "#3a4524", "#2c351b"],
 } as const
 
 const HERO_PARTNERS = [...custodyPartners, ...brokeragePartners].slice(0, 8)
@@ -35,9 +37,10 @@ export function Hero() {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
   const [meshVisible, setMeshVisible] = React.useState(false)
+  const [ambientEnabled, setAmbientEnabled] = React.useState(true)
   const ready = mounted && (resolvedTheme === "light" || resolvedTheme === "dark")
   const isDark = ready && resolvedTheme === "dark"
-  const showMesh = ready
+  const showMesh = ready && ambientEnabled
 
   React.useEffect(() => {
     setMounted(true)
@@ -49,6 +52,14 @@ export function Hero() {
     const id = requestAnimationFrame(() => setMeshVisible(true))
     return () => cancelAnimationFrame(id)
   }, [reduceMotion])
+
+  React.useEffect(() => {
+    const sync = () => setAmbientEnabled(getAmbientBackgroundEnabled())
+    sync()
+
+    window.addEventListener(AMBIENT_BACKGROUND_EVENT, sync)
+    return () => window.removeEventListener(AMBIENT_BACKGROUND_EVENT, sync)
+  }, [])
   const palette = ready
     ? resolvedTheme === "dark"
       ? PALETTES.dark
@@ -60,11 +71,24 @@ export function Hero() {
       : OVERLAY_PALETTES.light
     : OVERLAY_PALETTES.light
 
-  const baseOpacity = ready ? (isDark ? "opacity-[0.55]" : "opacity-[0.7]") : "opacity-[0.7]"
-  const overlayOpacity = ready ? (isDark ? "opacity-[0.32]" : "opacity-[0.6]") : "opacity-[0.6]"
+  const baseOpacity = ready
+    ? isDark
+      ? "opacity-[0.55]"
+      : "opacity-[0.55]"
+    : "opacity-[0.55]"
+  const overlayOpacity = ready
+    ? isDark
+      ? "opacity-[0.32]"
+      : "opacity-[0.38]"
+    : "opacity-[0.38]"
 
   return (
-    <section className="bg-background bg-brand-soft relative overflow-hidden min-h-[85vh] md:min-h-[75vh]">
+    <section
+      className={cn(
+        "bg-background relative overflow-hidden min-h-[85vh] md:min-h-[75vh]",
+        ambientEnabled && "bg-brand-soft"
+      )}
+    >
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         {showMesh ? (
           <>
@@ -79,7 +103,7 @@ export function Hero() {
               distortion={isDark ? 0.55 : 0.75}
               swirl={isDark ? 0.25 : 0.4}
               grainOverlay={isDark ? 0.08 : 0.12}
-              style={{ backgroundColor: isDark ? "#0f172a" : "#fff8f1" }}
+              style={{ backgroundColor: isDark ? "#2c351b" : "#f7f3e2" }}
             />
             <MeshGradient
               className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${
@@ -96,7 +120,7 @@ export function Hero() {
             />
           </>
         ) : null}
-        {ready ? (
+        {ready && ambientEnabled ? (
           <>
             <div
               className={`absolute inset-0 backdrop-blur-[6px] ${
@@ -104,8 +128,8 @@ export function Hero() {
               }`}
               style={{
                 background: isDark
-                  ? "radial-gradient(circle at 70% 30%, rgba(134, 174, 221, 0.18), transparent 42%), radial-gradient(circle at 30% 80%, rgba(250, 210, 173, 0.14), transparent 38%)"
-                  : "radial-gradient(circle at 24% 24%, rgba(248, 215, 174, 0.5), transparent 55%), radial-gradient(circle at 78% 20%, rgba(136, 171, 219, 0.45), transparent 58%), radial-gradient(circle at 50% 50%, rgba(169, 184, 206, 0.35), transparent 60%)",
+                  ? "radial-gradient(circle at 70% 30%, rgba(153, 117, 63, 0.22), transparent 42%), radial-gradient(circle at 30% 80%, rgba(231, 212, 198, 0.12), transparent 40%)"
+                  : "radial-gradient(circle at 24% 24%, rgba(231, 212, 198, 0.6), transparent 55%), radial-gradient(circle at 78% 20%, rgba(217, 177, 166, 0.32), transparent 58%), radial-gradient(circle at 50% 55%, rgba(153, 117, 63, 0.14), transparent 60%)",
               }}
             />
             <div
@@ -120,14 +144,16 @@ export function Hero() {
             <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-background/10 to-background" />
           </>
         )}
-        <Image
-          src="/henderson.png"
-          alt="Henderson"
-          width={600}
-          height={600}
-          className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-[15%] opacity-50 mix-blend-soft-light object-contain h-full w-auto max-w-[min(120%,500px)] scale-125 md:scale-100 md:right-0 md:left-auto md:translate-x-[15%] md:translate-y-0 md:max-w-[min(50%,750px)] lg:max-w-[min(45%,850px)] xl:max-w-[min(40%,900px)]"
-          priority
-        />
+        {ambientEnabled ? (
+          <Image
+            src="/henderson.png"
+            alt="Henderson"
+            width={600}
+            height={600}
+            className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-[15%] opacity-50 mix-blend-soft-light object-contain h-full w-auto max-w-[min(120%,500px)] scale-125 md:scale-100 md:right-0 md:left-auto md:translate-x-[15%] md:translate-y-0 md:max-w-[min(50%,750px)] lg:max-w-[min(45%,850px)] xl:max-w-[min(40%,900px)]"
+            priority
+          />
+        ) : null}
       </div>
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 pt-48 pb-0 md:py-24">
@@ -137,7 +163,7 @@ export function Hero() {
           transition={{ duration: 0.5 }}
           className="relative z-10 max-w-3xl"
         >
-          <Badge variant="outline">
+          <Badge variant="secondary" className="border-border/60">
             Licensed custodian · SFC CE code AFQ783
           </Badge>
 
@@ -147,7 +173,7 @@ export function Hero() {
 
           <p
             className={`mt-5 text-base leading-relaxed md:text-lg ${
-              isDark ? "text-foreground/90" : "text-foreground/75"
+              isDark ? "text-foreground" : "text-muted-foreground"
             }`}
           >
             CWB Hong Kong is an independent licensed custodian and investment
@@ -195,7 +221,7 @@ export function Hero() {
                 <div className="text-sm font-medium">Safe custody</div>
                 <div
                   className={`text-sm leading-relaxed ${
-                    isDark ? "text-foreground/90" : "text-foreground/75"
+                    isDark ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
                   Segregated safekeeping with top-tier global custodians.
@@ -213,7 +239,7 @@ export function Hero() {
                 <div className="text-sm font-medium">Open architecture</div>
                 <div
                   className={`text-sm leading-relaxed ${
-                    isDark ? "text-foreground/90" : "text-foreground/75"
+                    isDark ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
                   Access to public and private opportunities across markets.
@@ -231,7 +257,7 @@ export function Hero() {
                 <div className="text-sm font-medium">Robust controls</div>
                 <div
                   className={`text-sm leading-relaxed ${
-                    isDark ? "text-foreground/90" : "text-foreground/75"
+                    isDark ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
                   Ring-fenced assets, segregation checks, and clean oversight.

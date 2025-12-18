@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useTheme } from "next-themes"
-import { Desktop, Moon, Sun } from "@phosphor-icons/react"
+import { Moon, Sun } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -33,11 +33,7 @@ export function ThemeToggle({
     setMounted(true)
   }, [])
 
-  const current = mounted
-    ? theme === "system"
-      ? resolvedTheme
-      : theme
-    : "light"
+  const current = mounted ? (theme ?? resolvedTheme ?? "light") : "light"
 
   const Icon = current === "dark" ? Moon : Sun
   const iconClassName = showLabel ? "size-4" : "size-5"
@@ -64,12 +60,7 @@ export function ThemeToggle({
           <Moon className="size-4" />
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => setTheme("system")}>
-          <Desktop className="size-4" />
-          System
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
-

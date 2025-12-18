@@ -50,12 +50,11 @@ function CapabilityTile({ capability }: { capability: Capability }) {
   const hasImage = Boolean(capability.image)
   const hasPartners = Boolean(capability.partners && capability.partners.length > 0)
   return (
+    <Link href={capability.href} className="block h-full">
     <Card
       variant="glass"
       className="relative h-full overflow-hidden group cursor-pointer transition-all hover:shadow-lg"
-      asChild
     >
-      <Link href={capability.href}>
       {capability.image ? (
         <>
           <Image
@@ -98,34 +97,39 @@ function CapabilityTile({ capability }: { capability: Capability }) {
             </div>
           )}
           <div className="mt-auto flex justify-end">
-            <Button variant={hasImage ? "secondary" : "ghost"} className="group-hover:bg-primary/10">
+            <Button variant={hasImage ? "secondary" : "ghost"} className="group-hover:bg-primary/10 pointer-events-none">
               Learn more
             </Button>
           </div>
         </CardContent>
       </div>
-      </Link>
     </Card>
+    </Link>
   )
 }
 
 function BuiltOnTrustCard() {
   return (
-    <Card variant="glass" className="h-full bg-primary/5">
+    <Card variant="highlight" className="h-full">
       <CardHeader className="space-y-4">
         <div className="flex items-center gap-3">
           <div className="bg-primary/10 text-primary grid size-12 shrink-0 place-items-center rounded-xl">
             <ShieldCheckIcon className="size-6" />
           </div>
           <div className="space-y-2">
-            <Badge variant="outline" className="w-fit">
+            <Badge
+              variant="outline"
+              className="bg-secondary-foreground/5 text-secondary-foreground border-secondary-foreground/20 w-fit"
+            >
               Built on trust
             </Badge>
-            <CardTitle className="text-xl">Licensed custodian, client-first stewardship.</CardTitle>
+            <CardTitle className="text-xl">
+              Licensed custodian, client-first stewardship.
+            </CardTitle>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="flex h-full flex-col justify-between gap-6 text-sm leading-relaxed text-muted-foreground">
+      <CardContent className="text-secondary-foreground/80 flex h-full flex-col justify-between gap-6 text-sm leading-relaxed">
         <div className="space-y-3">
           <p>
             We maintain segregated custody arrangements and robust operational controls to keep client assets
@@ -135,7 +139,7 @@ function BuiltOnTrustCard() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Button asChild>
-            <Link href="/contacts">Get in touch</Link>
+            <Link href="/contacts">Contact us</Link>
           </Button>
           <Button asChild variant="outline">
             <Link href="/who-we-are">Who we are</Link>

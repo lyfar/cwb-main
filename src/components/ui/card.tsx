@@ -14,6 +14,12 @@ const cardVariants = cva("text-card-foreground flex flex-col", {
         "transition-all duration-200 ease-in-out will-change-transform",
         "hover:-translate-y-1 hover:shadow-lg hover:border-ring/50"
       ),
+      highlight: cn(
+        "bg-secondary text-secondary-foreground",
+        "gap-6 rounded-[18px] border border-ring/20 py-6 shadow-sm",
+        "transition-all duration-200 ease-in-out will-change-transform",
+        "hover:-translate-y-1 hover:shadow-lg hover:border-ring/40"
+      ),
     },
   },
   defaultVariants: {

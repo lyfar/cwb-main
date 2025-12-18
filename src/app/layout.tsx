@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Crimson_Text, Poppins, Roboto } from "next/font/google"
+import { Cormorant_Garamond, DM_Sans } from "next/font/google"
 import { ThemeProvider } from "next-themes"
 
 import { SiteHeader } from "@/components/site/site-header"
@@ -8,22 +8,16 @@ import { PageTransition } from "@/components/site/page-transition"
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 })
 
-const roboto = Roboto({
-  variable: "--font-roboto",
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant-garamond",
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
-})
-
-const crimsonText = Crimson_Text({
-  variable: "--font-crimson-text",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["400", "500", "600", "700"],
 })
 
 export const metadata: Metadata = {
@@ -39,14 +33,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(()=>{try{const v=localStorage.getItem('cwb-ambient');if(v==='off')document.documentElement.classList.add('no-ambient');}catch{}})();",
+          }}
+        />
+      </head>
       <body
-        className={`${poppins.variable} ${roboto.variable} ${crimsonText.variable} antialiased`}
+        className={`${dmSans.variable} ${cormorantGaramond.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
           storageKey="cwb-theme"
           defaultTheme="light"
-          enableSystem
+          enableSystem={false}
           disableTransitionOnChange
         >
           <SiteHeader />
