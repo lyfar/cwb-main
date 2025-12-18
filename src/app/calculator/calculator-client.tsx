@@ -1,8 +1,11 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 
 import { CalculatorWorkspace } from "@/app/calculator/_components/calculator-workspace"
+import { getCalculatorCopy } from "@/app/calculator/_lib/copy"
+import { getLocaleFromPathname } from "@/lib/locale"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,6 +19,9 @@ function PasswordGate({
 }: {
   onUnlock: () => void
 }) {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCalculatorCopy(locale)
   const [password, setPassword] = React.useState("")
   const [error, setError] = React.useState<string | null>(null)
 
@@ -27,27 +33,28 @@ function PasswordGate({
       return
     }
 
-    setError("Incorrect password.")
+    setError(copy.passwordGate.incorrectPassword)
   }
 
   return (
     <main className="mx-auto w-full max-w-none px-6 pt-24 pb-14 md:pt-28 md:pb-16 lg:px-10">
       <header className="space-y-3">
-        <Badge variant="outline">Internal</Badge>
+        <Badge variant="outline">{copy.badgeInternal}</Badge>
         <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-          Calculator
+          {copy.title}
         </h1>
         <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
-          Password-protected internal estimate tool. Not intended for public
-          sharing.
+          {copy.passwordGate.description}
         </p>
       </header>
 
       <div className="mt-10 max-w-md rounded-2xl border border-border/40 bg-card/60 supports-[backdrop-filter]:bg-card/40 backdrop-blur-[10px] p-6">
-        <div className="text-sm font-medium">Enter password</div>
+        <div className="text-sm font-medium">{copy.passwordGate.enterPassword}</div>
         <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="calculator-password">Password</Label>
+            <Label htmlFor="calculator-password">
+              {copy.passwordGate.passwordLabel}
+            </Label>
             <Input
               id="calculator-password"
               type="password"
@@ -60,7 +67,7 @@ function PasswordGate({
             ) : null}
           </div>
           <Button type="submit" className="w-full">
-            Unlock
+            {copy.unlock}
           </Button>
         </form>
       </div>
@@ -69,6 +76,9 @@ function PasswordGate({
 }
 
 export function CalculatorClient() {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCalculatorCopy(locale)
   const [unlocked, setUnlocked] = React.useState(false)
 
   React.useEffect(() => {
@@ -93,17 +103,16 @@ export function CalculatorClient() {
     <main className="mx-auto w-full max-w-none px-6 pt-24 pb-14 md:pt-28 md:pb-16 lg:px-10">
       <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="space-y-2">
-          <Badge variant="outline">Internal</Badge>
+          <Badge variant="outline">{copy.badgeInternal}</Badge>
           <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Calculator
+            {copy.title}
           </h1>
           <p className="text-muted-foreground max-w-3xl text-sm leading-relaxed">
-            Fee schedule reference and quick estimates based on the published
-            maximum fee table.
+            {copy.headerDescription}
           </p>
         </div>
         <Button variant="outline" onClick={lock}>
-          Lock
+          {copy.lock}
         </Button>
       </header>
 

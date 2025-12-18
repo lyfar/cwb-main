@@ -1,8 +1,12 @@
 "use client"
 
+import { usePathname } from "next/navigation"
+
+import { getCalculatorCopy } from "@/app/calculator/_lib/copy"
 import { formatUSD } from "@/app/calculator/_lib/format"
 import { panelShell } from "@/app/calculator/_lib/panel-shell"
 import type { TradePeriod } from "@/app/calculator/_lib/scenario"
+import { getLocaleFromPathname } from "@/lib/locale"
 import {
   Table,
   TableBody,
@@ -27,6 +31,10 @@ export function ScenarioSummaryPanel({
   oneOffServiceUSD: number
   tradePeriod: TradePeriod
 }) {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCalculatorCopy(locale)
+
   const annualisedAllInUSD =
     annualRecurringUSD +
     annualServiceUSD +
@@ -34,63 +42,67 @@ export function ScenarioSummaryPanel({
 
   return (
     <section className={panelShell}>
-      <header>
-        <div className="text-sm font-medium">Summary</div>
-        <div className="text-muted-foreground mt-1 text-xs">
-          Totals are estimates for internal scoping only.
-        </div>
+      <header className="space-y-2">
+        <h2 className="font-serif text-3xl leading-tight tracking-tight md:text-4xl">
+          {copy.summaryPanel.title}
+        </h2>
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          {copy.summaryPanel.description}
+        </p>
       </header>
 
       <div className="mt-4 overflow-hidden rounded-xl border border-border/40">
-        <Table className="w-full border-separate border-spacing-0">
+        <Table className="w-full table-fixed border-separate border-spacing-0">
           <TableBody>
             <TableRow>
-              <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs">
-                Quarterly recurring (management)
+              <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs whitespace-normal">
+                {copy.summaryPanel.quarterlyRecurring}
               </TableCell>
-              <TableCell className="border-border/40 border-b px-4 py-3 text-right text-xs font-mono tabular-nums">
+              <TableCell className="border-border/40 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-36">
                 {formatUSD(quarterlyRecurringUSD)}
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs">
-                Annual recurring (management + service)
+              <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs whitespace-normal">
+                {copy.summaryPanel.annualRecurring}
               </TableCell>
-              <TableCell className="border-border/40 border-b px-4 py-3 text-right text-xs font-mono tabular-nums">
+              <TableCell className="border-border/40 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-36">
                 {formatUSD(annualRecurringUSD + annualServiceUSD)}
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs">
-                Transactional total (trades + transfers)
+              <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs whitespace-normal">
+                {copy.summaryPanel.transactionalTotal}
               </TableCell>
-              <TableCell className="border-border/40 border-b px-4 py-3 text-right text-xs font-mono tabular-nums">
+              <TableCell className="border-border/40 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-36">
                 {formatUSD(transactionalTotalUSD)}
               </TableCell>
             </TableRow>
             {annualisedTransactionUSD != null ? (
               <TableRow>
-                <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs">
-                  Annualised transactional ({tradePeriod})
+                <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs whitespace-normal">
+                  {copy.summaryPanel.annualisedTransactional(
+                    copy.tradingPanel.periods[tradePeriod] ?? tradePeriod
+                  )}
                 </TableCell>
-                <TableCell className="border-border/40 border-b px-4 py-3 text-right text-xs font-mono tabular-nums">
+                <TableCell className="border-border/40 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-36">
                   {formatUSD(annualisedTransactionUSD)}
                 </TableCell>
               </TableRow>
             ) : null}
             <TableRow>
-              <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs">
-                One-off + at cost
+              <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs whitespace-normal">
+                {copy.summaryPanel.oneOffAtCost}
               </TableCell>
-              <TableCell className="border-border/40 border-b px-4 py-3 text-right text-xs font-mono tabular-nums">
+              <TableCell className="border-border/40 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-36">
                 {formatUSD(oneOffServiceUSD)}
               </TableCell>
             </TableRow>
             <TableRow className="bg-secondary/25 hover:bg-secondary/25">
-              <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs font-medium">
-                Annualised all-in (excl. one-off)
+              <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs font-medium whitespace-normal">
+                {copy.summaryPanel.annualisedAllIn}
               </TableCell>
-              <TableCell className="border-border/40 border-b px-4 py-3 text-right text-xs font-mono tabular-nums font-semibold">
+              <TableCell className="border-border/40 border-b px-4 py-3 text-right text-xs font-mono tabular-nums font-semibold w-36">
                 {formatUSD(annualisedAllInUSD)}
               </TableCell>
             </TableRow>
@@ -99,9 +111,7 @@ export function ScenarioSummaryPanel({
       </div>
 
       <div className="text-muted-foreground mt-4 text-xs leading-relaxed">
-        The fee tables on the left are the reference maximum fee schedule. This
-        estimator applies minimums where stated and uses the selected trade list
-        period to annualise transactional totals.
+        {copy.summaryPanel.footerNote}
       </div>
     </section>
   )

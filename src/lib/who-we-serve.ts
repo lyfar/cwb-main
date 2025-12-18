@@ -1,34 +1,71 @@
+import type { Locale } from "@/lib/locale"
+
+export type WhoWeServeItemId =
+  | "overview"
+  | "institutional-clients"
+  | "private-clients"
+  | "family-offices"
+
 export type WhoWeServeItem = {
-  id: "overview" | "institutional-clients" | "private-clients" | "family-offices"
+  id: WhoWeServeItemId
   title: string
   href: string
   description: string
 }
 
-export const whoWeServeItems: WhoWeServeItem[] = [
+type Localized = {
+  en: string
+  ru: string
+}
+
+const WHO_WE_SERVE_ITEMS: Array<{
+  id: WhoWeServeItemId
+  title: Localized
+  href: string
+  description: Localized
+}> = [
   {
     id: "overview",
-    title: "Overview",
+    title: { en: "Overview", ru: "Обзор" },
     href: "/who-we-serve",
-    description: "Client segments we support.",
+    description: { en: "Client segments we support.", ru: "Клиентские сегменты, с которыми мы работаем." },
   },
   {
     id: "institutional-clients",
-    title: "Institutional clients",
+    title: { en: "Institutional clients", ru: "Институциональные клиенты" },
     href: "/who-we-serve/institutional-clients",
-    description: "Funds, asset managers, and treasuries needing robust controls.",
+    description: {
+      en: "Funds, asset managers, and treasuries needing robust controls.",
+      ru: "Фонды, управляющие и казначейства, которым важны строгие контроли.",
+    },
   },
   {
     id: "private-clients",
-    title: "Private clients",
+    title: { en: "Private clients", ru: "Частные клиенты" },
     href: "/who-we-serve/private-clients",
-    description: "HNW individuals and families seeking a private banking–style experience.",
+    description: {
+      en: "HNW individuals and families seeking a private banking–style experience.",
+      ru: "Состоятельные клиенты и семьи, которым нужен сервис в стиле private banking.",
+    },
   },
   {
     id: "family-offices",
-    title: "Family offices",
+    title: { en: "Family offices", ru: "Семейные офисы" },
     href: "/who-we-serve/family-offices",
-    description: "Governance, reporting, and open-architecture access across markets.",
+    description: {
+      en: "Governance, reporting, and open-architecture access across markets.",
+      ru: "Управление, отчётность и доступ к возможностям на разных рынках.",
+    },
   },
 ]
 
+export function getWhoWeServeItems(locale: Locale): WhoWeServeItem[] {
+  return WHO_WE_SERVE_ITEMS.map((item) => ({
+    id: item.id,
+    title: item.title[locale],
+    href: item.href,
+    description: item.description[locale],
+  }))
+}
+
+export const whoWeServeItems = getWhoWeServeItems("en")

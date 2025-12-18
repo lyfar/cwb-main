@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   ArrowsLeftRight,
+  Bank,
   CaretDown,
   ChartLineUp,
   Check,
@@ -12,8 +13,10 @@ import {
   Vault,
 } from "@phosphor-icons/react"
 
+import { getCopy } from "@/lib/copy"
+import { getLocaleFromPathname, localizeHref, stripLocalePrefix } from "@/lib/locale"
 import { cn } from "@/lib/utils"
-import { whatWeDoItems } from "@/lib/what-we-do"
+import { getWhatWeDoItems } from "@/lib/what-we-do"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -29,6 +32,7 @@ const itemIcons = {
   "safe-custody": Vault,
   "asset-management": ChartLineUp,
   brokerage: ArrowsLeftRight,
+  "banking-services": Bank,
 } as const
 
 function normalizePathname(pathname: string) {
@@ -37,9 +41,9 @@ function normalizePathname(pathname: string) {
   return pathname.replace(/\/+$/, "")
 }
 
-function getCurrentItem(pathname: string) {
+function getCurrentItem(pathname: string, items: ReturnType<typeof getWhatWeDoItems>) {
   const normalized = normalizePathname(pathname)
-  const sorted = [...whatWeDoItems].sort(
+  const sorted = [...items].sort(
     (a, b) => b.href.length - a.href.length
   )
 
@@ -47,7 +51,7 @@ function getCurrentItem(pathname: string) {
     sorted.find((item) => {
       if (normalized === item.href) return true
       return normalized.startsWith(`${item.href}/`)
-    }) ?? whatWeDoItems[0]
+    }) ?? items[0]
   )
 }
 
@@ -67,10 +71,11 @@ export function WhatWeDoMenu({
   className?: string
 }) {
   const pathname = usePathname()
-  const current = React.useMemo(
-    () => getCurrentItem(pathname ?? "/"),
-    [pathname]
-  )
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCopy(locale)
+  const items = React.useMemo(() => getWhatWeDoItems(locale), [locale])
+  const basePathname = stripLocalePrefix(pathname ?? "/")
+  const current = React.useMemo(() => getCurrentItem(basePathname, items), [basePathname, items])
 
   const triggerText = mode === "label" ? label : current.title
 
@@ -87,15 +92,18 @@ export function WhatWeDoMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={align} className="min-w-64">
-        <DropdownMenuLabel>What we do</DropdownMenuLabel>
+        <DropdownMenuLabel>{copy.nav.whatWeDo}</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {whatWeDoItems.map((item) => {
+        {items.map((item) => {
           const Icon = itemIcons[item.id]
           const isActive = item.id === current.id
 
           return (
             <DropdownMenuItem key={item.id} asChild>
-              <Link href={item.href} className="flex items-start gap-2">
+              <Link
+                href={localizeHref(item.href, locale)}
+                className="flex items-start gap-2"
+              >
                 <Icon className="mt-0.5 size-4 opacity-70" />
                 <div className="flex-1">
                   <div className="flex items-center justify-between gap-2">
@@ -119,4 +127,3 @@ export function WhatWeDoMenu({
     </DropdownMenu>
   )
 }
-

@@ -1,9 +1,22 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 
-import { feeSchedule, type FeeScheduleItem, type Tier } from "@/lib/fee-schedule"
-import { feeSections, getFeeItemsForSection, getManagementServiceLabel } from "@/app/calculator/_lib/fee-sections"
+import {
+  feeSchedule,
+  type FeeFrequency,
+  type FeeScheduleItem,
+  type Tier,
+} from "@/lib/fee-schedule"
+import type { Locale } from "@/lib/locale"
+import { getLocaleFromPathname } from "@/lib/locale"
+import { getCalculatorCopy } from "@/app/calculator/_lib/copy"
+import {
+  getFeeItemsForSection,
+  getManagementServiceLabel,
+  type FeeSectionId,
+} from "@/app/calculator/_lib/fee-sections"
 import { formatCompactNumber, formatPercent, formatUSD } from "@/app/calculator/_lib/format"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -17,38 +30,42 @@ import {
 
 type SelectPayload = { id: string; contractType?: "options" | "futures" }
 
-function formatTierBand(tiers: Tier[], index: number) {
+function formatTierBand(tiers: Tier[], index: number, locale: Locale) {
   const tier = tiers[index]
   if (!tier) return "—"
 
   const previousCap = index > 0 ? tiers[index - 1]?.upToUSD ?? 0 : 0
+  const aboveLabel = locale === "ru" ? "Свыше" : "Above"
+  const upToLabel = locale === "ru" ? "До" : "Up to"
 
   if (tier.upToUSD == null) {
-    return `Above ${formatCompactNumber(previousCap)}`
+    return `${aboveLabel} ${formatCompactNumber(previousCap)}`
   }
 
   if (previousCap > 0) {
     return `${formatCompactNumber(previousCap)}–${formatCompactNumber(tier.upToUSD)}`
   }
 
-  return `Up to ${formatCompactNumber(tier.upToUSD)}`
+  return `${upToLabel} ${formatCompactNumber(tier.upToUSD)}`
 }
 
-function formatTradeTier(tiers: Tier[], index: number) {
+function formatTradeTier(tiers: Tier[], index: number, locale: Locale) {
   const tier = tiers[index]
   if (!tier) return "—"
 
   const previousCap = index > 0 ? tiers[index - 1]?.upToUSD ?? 0 : 0
+  const aboveLabel = locale === "ru" ? "Свыше" : "Above"
+  const upToLabel = locale === "ru" ? "До" : "Up to"
 
   if (tier.upToUSD == null) {
-    return `Above ${Math.round(previousCap).toLocaleString("en-US")}`
+    return `${aboveLabel} ${Math.round(previousCap).toLocaleString("en-US")}`
   }
 
   if (previousCap > 0) {
     return `${Math.round(previousCap).toLocaleString("en-US")}–${Math.round(tier.upToUSD).toLocaleString("en-US")}`
   }
 
-  return `Up to ${Math.round(tier.upToUSD).toLocaleString("en-US")}`
+  return `${upToLabel} ${Math.round(tier.upToUSD).toLocaleString("en-US")}`
 }
 
 function parseTradingAsset(asset: string): { assetClass: string; detail: string } {
@@ -98,8 +115,10 @@ type TradingAssetGroup = {
   regions: TradingRegionGroup[]
 }
 
-function buildTradingGroups(items: FeeScheduleItem[]): TradingAssetGroup[] {
+function buildTradingGroups(items: FeeScheduleItem[], locale: Locale): TradingAssetGroup[] {
   const assetMap = new Map<string, Map<string, TradingRow[]>>()
+  const allLabel = locale === "ru" ? "Все" : "All"
+  const perContractLabel = locale === "ru" ? "контракт" : "contract"
 
   function pushRow(assetClass: string, region: string, row: TradingRow) {
     const regionMap = assetMap.get(assetClass) ?? new Map<string, TradingRow[]>()
@@ -121,7 +140,7 @@ function buildTradingGroups(items: FeeScheduleItem[]): TradingAssetGroup[] {
         pushRow(assetClass, region, {
           itemId: item.id,
           region,
-          tier: formatTradeTier(tiers, index),
+          tier: formatTradeTier(tiers, index, locale),
           rate: formatPercent(tier.rate),
           minPerTx,
         })
@@ -133,7 +152,7 @@ function buildTradingGroups(items: FeeScheduleItem[]): TradingAssetGroup[] {
       pushRow(assetClass, region, {
         itemId: item.id,
         region,
-        tier: "All",
+        tier: allLabel,
         rate: formatPercent(item.formula.rate),
         minPerTx,
       })
@@ -144,7 +163,7 @@ function buildTradingGroups(items: FeeScheduleItem[]): TradingAssetGroup[] {
       pushRow(assetClass, region, {
         itemId: item.id,
         region,
-        tier: "All",
+        tier: allLabel,
         rate: `${formatPercent(item.formula.minRate)}–${formatPercent(item.formula.maxRate)}`,
         minPerTx,
       })
@@ -156,16 +175,16 @@ function buildTradingGroups(items: FeeScheduleItem[]): TradingAssetGroup[] {
         itemId: item.id,
         contractType: "options",
         region: "Listed options",
-        tier: "All",
-        rate: `${formatUSD(item.formula.optionUSD)} / contract`,
+        tier: allLabel,
+        rate: `${formatUSD(item.formula.optionUSD)} / ${perContractLabel}`,
         minPerTx,
       })
       pushRow(assetClass, "Futures", {
         itemId: item.id,
         contractType: "futures",
         region: "Futures",
-        tier: "All",
-        rate: `${formatUSD(item.formula.futureUSD)} / contract`,
+        tier: allLabel,
+        rate: `${formatUSD(item.formula.futureUSD)} / ${perContractLabel}`,
         minPerTx,
       })
       continue
@@ -228,19 +247,71 @@ function buildTradingGroups(items: FeeScheduleItem[]): TradingAssetGroup[] {
   return groups
 }
 
+function translateAssetClass(assetClass: string, locale: Locale) {
+  if (locale !== "ru") return assetClass
+
+  const map: Record<string, string> = {
+    "Equities & ETFs": "Акции и ETF",
+    "Bonds / Fixed income": "Облигации / Fixed income",
+    Funds: "Фонды",
+    Derivatives: "Деривативы",
+    Currencies: "Валюты",
+    Trading: "Торги",
+  }
+
+  return map[assetClass] ?? assetClass
+}
+
+function translateRegion(region: string, locale: Locale) {
+  if (locale !== "ru") return region
+
+  const map: Record<string, string> = {
+    "US / EU equities": "Акции США / ЕС",
+    "HK equities": "Акции Гонконга",
+    "Malaysia / Japan / Taiwan equities": "Акции Малайзии / Японии / Тайваня",
+    "China Stock Connect": "China Stock Connect",
+    "US treasuries": "US Treasuries",
+    "Other bonds": "Прочие облигации",
+    "Mutual funds": "Паевые фонды",
+    "Money market funds": "Фонды денежного рынка",
+    "Alternative funds": "Альтернативные фонды",
+    "Listed options": "Листинговые опционы",
+    Futures: "Фьючерсы",
+    "Structured products, certificates & other derivatives":
+      "Структурные продукты, сертификаты и др. деривативы",
+    "Foreign exchange": "FX",
+    "Options & futures": "Опционы и фьючерсы",
+    Deposits: "Депозиты",
+    Annual: "Год",
+    "Flat fee": "Фикс.",
+    "Cash (Client money)": "Денежные средства (клиентские)",
+    "Pass-through": "Pass-through",
+  }
+
+  return map[region] ?? region
+}
+
+function localizeFrequency(freq: FeeFrequency, locale: Locale) {
+  const copy = getCalculatorCopy(locale)
+  return copy.frequencies[freq] ?? freq
+}
+
 function SectionLayout({
   sectionId,
   children,
 }: {
-  sectionId: (typeof feeSections)[number]["id"]
+  sectionId: FeeSectionId
   children: React.ReactNode
 }) {
-  const section = feeSections.find((item) => item.id === sectionId)
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCalculatorCopy(locale)
+  const section = copy.feeSections[sectionId]
   if (!section) return null
 
   return (
     <section className="overflow-hidden rounded-2xl border border-border/40 bg-card/60 supports-[backdrop-filter]:bg-card/40 backdrop-blur-[10px]">
-      <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]">
         <div className="bg-secondary/15 border-border/40 border-b px-6 py-8 lg:border-b-0 lg:border-r">
           <h2 className="font-serif text-4xl leading-tight tracking-tight">
             {section.title}
@@ -262,6 +333,9 @@ export function AnnualManagementFeesTable({
   selectedId: string
   onSelect: (payload: SelectPayload) => void
 }) {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCalculatorCopy(locale)
   const items = getFeeItemsForSection("annual-management")
 
   return (
@@ -270,19 +344,19 @@ export function AnnualManagementFeesTable({
         <TableHeader>
           <TableRow className="bg-secondary/30 hover:bg-secondary/30">
             <TableHead className="border-border/40 border-b border-r px-4 py-3 text-xs whitespace-normal">
-              Service type
+              {copy.feeTables.serviceType}
             </TableHead>
             <TableHead className="border-border/40 border-b border-r px-4 py-3 text-xs whitespace-normal">
-              Asset / tier (USD)
+              {copy.feeTables.assetTierUsd}
             </TableHead>
             <TableHead className="border-border/40 border-b border-r px-4 py-3 text-xs text-right whitespace-normal">
-              Annual rate
+              {copy.feeTables.annualRate}
             </TableHead>
             <TableHead className="border-border/40 border-b border-r px-4 py-3 text-xs text-right whitespace-normal">
-              Minimum fee (USD)
+              {copy.feeTables.minimumFeeUsd}
             </TableHead>
             <TableHead className="border-border/40 border-b px-4 py-3 text-xs whitespace-normal">
-              Frequency
+              {copy.feeTables.frequency}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -291,7 +365,7 @@ export function AnnualManagementFeesTable({
             if (item.formula.kind !== "tiered_percent") return []
             const tiers = item.formula.tiers
             const rowSpan = tiers.length
-            const serviceLabel = getManagementServiceLabel(item.id)
+            const serviceLabel = getManagementServiceLabel(item.id, locale)
             return tiers.map((tier, index) => (
               <TableRow
                 key={`${item.id}-${index}`}
@@ -308,7 +382,7 @@ export function AnnualManagementFeesTable({
                   </TableCell>
                 ) : null}
                 <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs font-mono tabular-nums">
-                  {formatTierBand(tiers, index)}
+                  {formatTierBand(tiers, index, locale)}
                 </TableCell>
                 <TableCell className="border-border/40 border-b border-r px-4 py-3 text-xs font-mono tabular-nums text-right">
                   {formatPercent(tier.rate)}
@@ -326,7 +400,7 @@ export function AnnualManagementFeesTable({
                     rowSpan={rowSpan}
                     className="border-border/40 border-b px-4 py-3 align-top text-xs"
                   >
-                    {item.frequency}
+                    {localizeFrequency(item.frequency, locale)}
                   </TableCell>
                 ) : null}
               </TableRow>
@@ -345,8 +419,14 @@ export function TradingExecutionCostsTable({
   selectedId: string
   onSelect: (payload: SelectPayload) => void
 }) {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCalculatorCopy(locale)
   const items = getFeeItemsForSection("trading-execution")
-  const groups = React.useMemo(() => buildTradingGroups(items), [items])
+  const groups = React.useMemo(
+    () => buildTradingGroups(items, locale),
+    [items, locale]
+  )
 
   return (
     <SectionLayout sectionId="trading-execution">
@@ -354,19 +434,19 @@ export function TradingExecutionCostsTable({
         <TableHeader>
           <TableRow className="bg-secondary/30 hover:bg-secondary/30">
             <TableHead className="border-border/40 border-b border-r px-4 py-3 text-xs whitespace-normal">
-              Asset class
+              {copy.feeTables.assetClass}
             </TableHead>
             <TableHead className="border-border/40 border-b border-r px-4 py-3 text-xs whitespace-normal">
-              Region / detail
+              {copy.feeTables.regionDetail}
             </TableHead>
             <TableHead className="border-border/40 border-b border-r px-4 py-3 text-xs whitespace-normal">
-              Trade value tier (USD)
+              {copy.feeTables.tradeValueTierUsd}
             </TableHead>
             <TableHead className="border-border/40 border-b border-r px-4 py-3 text-xs text-right whitespace-normal">
-              Rate / fee
+              {copy.feeTables.rateFee}
             </TableHead>
             <TableHead className="border-border/40 border-b px-4 py-3 text-xs text-right whitespace-normal">
-              Minimum per tx (USD)
+              {copy.feeTables.minimumPerTxUsd}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -396,7 +476,7 @@ export function TradingExecutionCostsTable({
                         rowSpan={assetRowCount}
                         className="border-border/40 bg-secondary/20 border-b border-r px-4 py-3 align-top text-xs font-medium whitespace-normal"
                       >
-                        {group.assetClass}
+                        {translateAssetClass(group.assetClass, locale)}
                       </TableCell>
                     ) : null}
 
@@ -405,7 +485,7 @@ export function TradingExecutionCostsTable({
                         rowSpan={regionRowCount}
                         className="border-border/40 border-b border-r px-4 py-3 align-top text-xs whitespace-normal"
                       >
-                        {regionGroup.region}
+                        {translateRegion(regionGroup.region, locale)}
                       </TableCell>
                     ) : null}
 
@@ -436,9 +516,29 @@ export function OperationalServiceFeesTable({
   selectedId: string
   onSelect: (payload: SelectPayload) => void
 }) {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCalculatorCopy(locale)
   const items = getFeeItemsForSection("operational-service")
 
   const categoryLabel = (item: FeeScheduleItem) => {
+    if (locale === "ru") {
+      switch (item.id) {
+        case "fiduciary-deposits":
+          return "Фидуциарное размещение"
+        case "complex-onboarding":
+          return "Онбординг"
+        case "administration":
+          return "Администрирование"
+        case "cash-transfer":
+          return "Переводы"
+        case "expenses-pass-through":
+          return "Pass-through"
+        default:
+          return item.operation
+      }
+    }
+
     switch (item.id) {
       case "fiduciary-deposits":
         return "Fiduciary placement"
@@ -457,19 +557,29 @@ export function OperationalServiceFeesTable({
 
   const rateLabel = (item: FeeScheduleItem) => {
     if (item.formula.kind === "percent") return formatPercent(item.formula.rate)
-    if (item.formula.kind === "flat_usd") return "Flat fee"
-    if (item.formula.kind === "pass_through") return "At cost"
+    if (item.formula.kind === "flat_usd")
+      return locale === "ru" ? "Фикс." : "Flat fee"
+    if (item.formula.kind === "pass_through")
+      return locale === "ru" ? "At cost" : "At cost"
     return "—"
   }
 
   const minimumLabel = (item: FeeScheduleItem) => {
     if (item.formula.kind === "flat_usd") return formatUSD(item.formula.amountUSD)
-    if (item.formula.kind === "pass_through") return "N/A"
+    if (item.formula.kind === "pass_through") return locale === "ru" ? "Н/Д" : "N/A"
     if (item.minFeeUSD) return formatUSD(item.minFeeUSD)
     return "—"
   }
 
   const description = (item: FeeScheduleItem) => {
+    if (locale === "ru") {
+      if (item.id === "expenses-pass-through") return "Сторонние расходы / third-party"
+      if (item.id === "complex-onboarding") return "Сложный онбординг"
+      if (item.id === "administration") return "Администрирование"
+      if (item.id === "cash-transfer") return "Денежный перевод"
+      return translateRegion(item.asset, locale)
+    }
+
     if (item.id === "expenses-pass-through") return "Expenses / third-party"
     if (item.id === "complex-onboarding") return "Complex onboarding fee"
     if (item.id === "administration") return "Administration fee"
@@ -483,19 +593,19 @@ export function OperationalServiceFeesTable({
         <TableHeader>
           <TableRow className="bg-secondary/30 hover:bg-secondary/30">
             <TableHead className="border-border/40 border-b border-r px-4 py-3 text-xs whitespace-normal">
-              Fee category
+              {copy.feeTables.feeCategory}
             </TableHead>
             <TableHead className="border-border/40 border-b border-r px-4 py-3 text-xs whitespace-normal">
-              Description
+              {copy.feeTables.description}
             </TableHead>
             <TableHead className="border-border/40 border-b border-r px-4 py-3 text-xs text-right whitespace-normal">
-              Rate / fee
+              {copy.feeTables.rateFee}
             </TableHead>
             <TableHead className="border-border/40 border-b border-r px-4 py-3 text-xs text-right whitespace-normal">
-              Minimum / flat fee
+              {copy.feeTables.minimumFlatFee}
             </TableHead>
             <TableHead className="border-border/40 border-b px-4 py-3 text-xs whitespace-normal">
-              Frequency
+              {copy.feeTables.frequency}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -520,7 +630,7 @@ export function OperationalServiceFeesTable({
                 {minimumLabel(item)}
               </TableCell>
               <TableCell className="border-border/40 border-b px-4 py-3 align-top text-xs whitespace-normal">
-                {item.frequency}
+                {localizeFrequency(item.frequency, locale)}
               </TableCell>
             </TableRow>
           ))}
@@ -537,13 +647,18 @@ export function FeeScheduleTables({
   selectedId: string
   onSelect: (payload: SelectPayload) => void
 }) {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCalculatorCopy(locale)
   const hasSchedule = feeSchedule.length > 0
   if (!hasSchedule) {
     return (
       <div className="rounded-2xl border border-border/40 bg-card/60 supports-[backdrop-filter]:bg-card/40 backdrop-blur-[10px] p-6">
-        <div className="text-sm font-medium">Fee schedule</div>
+        <div className="text-sm font-medium">
+          {locale === "ru" ? "Таблица комиссий" : "Fee schedule"}
+        </div>
         <div className="text-muted-foreground mt-2 text-sm">
-          No schedule data found.
+          {locale === "ru" ? "Данные не найдены." : "No schedule data found."}
         </div>
       </div>
     )
@@ -553,11 +668,15 @@ export function FeeScheduleTables({
     <div className="space-y-8">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Badge variant="outline">Internal</Badge>
-          <div className="text-sm font-medium">Fee schedule</div>
+          <Badge variant="outline">{copy.badgeInternal}</Badge>
+          <div className="text-sm font-medium">
+            {locale === "ru" ? "Таблица комиссий" : "Fee schedule"}
+          </div>
         </div>
         <div className="text-muted-foreground text-xs">
-          Click a row to load it in the calculator.
+          {locale === "ru"
+            ? "Нажмите на строку, чтобы загрузить её в калькулятор."
+            : "Click a row to load it in the calculator."}
         </div>
       </div>
 

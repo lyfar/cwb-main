@@ -12,9 +12,12 @@ import {
   Vault,
 } from "@phosphor-icons/react"
 import { useTheme } from "next-themes"
+import { usePathname } from "next/navigation"
 
 import { brokeragePartners, custodyPartners, logoDevUrl } from "@/lib/partners"
 import { AMBIENT_BACKGROUND_EVENT, getAmbientBackgroundEnabled } from "@/lib/ambient-background"
+import { getCopy } from "@/lib/copy"
+import { getLocaleFromPathname, localizeHref } from "@/lib/locale"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -35,6 +38,9 @@ const HERO_PARTNERS = [...custodyPartners, ...brokeragePartners].slice(0, 8)
 export function Hero() {
   const reduceMotion = useReducedMotion()
   const { resolvedTheme } = useTheme()
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCopy(locale)
   const [mounted, setMounted] = React.useState(false)
   const [meshVisible, setMeshVisible] = React.useState(false)
   const [ambientEnabled, setAmbientEnabled] = React.useState(true)
@@ -164,11 +170,11 @@ export function Hero() {
           className="relative z-10 max-w-3xl"
         >
           <Badge variant="secondary" className="border-border/60">
-            Licensed custodian · SFC CE code AFQ783
+            {copy.hero.badge}
           </Badge>
 
           <h1 className="mt-4 text-4xl font-semibold tracking-tight text-foreground opacity-100 md:mt-6 md:text-6xl">
-            Built on trust. Driven by vision.
+            {copy.hero.title}
           </h1>
 
           <p
@@ -176,9 +182,7 @@ export function Hero() {
               isDark ? "text-foreground" : "text-muted-foreground"
             }`}
           >
-            CWB Hong Kong is an independent licensed custodian and investment
-            management firm specialising in safe custody, brokerage, and asset
-            management for institutional and private clients.
+            {copy.hero.description}
           </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-x-8 gap-y-3">
@@ -196,12 +200,14 @@ export function Hero() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild>
-              <Link href="/contacts">
-                Contact us <ArrowRight className="size-4" />
+              <Link href={localizeHref("/contacts", locale)}>
+                {copy.hero.ctaPrimary} <ArrowRight className="size-4" />
               </Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href="/what-we-do">Explore capabilities</Link>
+              <Link href={localizeHref("/what-we-do", locale)}>
+                {copy.hero.ctaSecondary}
+              </Link>
             </Button>
           </div>
         </motion.div>
@@ -218,13 +224,15 @@ export function Hero() {
                 <Vault className="size-5" />
               </div>
               <div className="space-y-1">
-                <div className="text-sm font-medium">Safe custody</div>
+                <div className="text-sm font-medium">
+                  {copy.hero.cards.custody.title}
+                </div>
                 <div
                   className={`text-sm leading-relaxed ${
                     isDark ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
-                  Segregated safekeeping with top-tier global custodians.
+                  {copy.hero.cards.custody.description}
                 </div>
               </div>
             </CardContent>
@@ -236,13 +244,15 @@ export function Hero() {
                 <ChartLineUp className="size-5" />
               </div>
               <div className="space-y-1">
-                <div className="text-sm font-medium">Open architecture</div>
+                <div className="text-sm font-medium">
+                  {copy.hero.cards.architecture.title}
+                </div>
                 <div
                   className={`text-sm leading-relaxed ${
                     isDark ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
-                  Access to public and private opportunities across markets.
+                  {copy.hero.cards.architecture.description}
                 </div>
               </div>
             </CardContent>
@@ -254,13 +264,15 @@ export function Hero() {
                 <ShieldCheck className="size-5" />
               </div>
               <div className="space-y-1">
-                <div className="text-sm font-medium">Robust controls</div>
+                <div className="text-sm font-medium">
+                  {copy.hero.cards.controls.title}
+                </div>
                 <div
                   className={`text-sm leading-relaxed ${
                     isDark ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
-                  Ring-fenced assets, segregation checks, and clean oversight.
+                  {copy.hero.cards.controls.description}
                 </div>
               </div>
             </CardContent>

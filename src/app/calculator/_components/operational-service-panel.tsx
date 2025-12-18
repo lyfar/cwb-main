@@ -1,7 +1,11 @@
 "use client"
 
+import { usePathname } from "next/navigation"
+
 import { formatUSD } from "@/app/calculator/_lib/format"
+import { getCalculatorCopy } from "@/app/calculator/_lib/copy"
 import { panelShell } from "@/app/calculator/_lib/panel-shell"
+import { getLocaleFromPathname } from "@/lib/locale"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -38,22 +42,26 @@ export function OperationalServicePanel({
   annualServiceUSD: number
   oneOffServiceUSD: number
 }) {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCalculatorCopy(locale)
+
   return (
     <section className={panelShell}>
       <header className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-sm font-medium">Operational & service</div>
+          <div className="text-sm font-medium">{copy.operationalPanel.title}</div>
           <div className="text-muted-foreground mt-1 text-xs">
-            Add account and administrative costs.
+            {copy.operationalPanel.description}
           </div>
         </div>
-        <Badge variant="outline">Mixed</Badge>
+        <Badge variant="outline">{copy.operationalPanel.badge}</Badge>
       </header>
 
       <div className="mt-5 space-y-4">
         <div className="grid gap-3 md:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="deposit-value">Deposits value (USD)</Label>
+            <Label htmlFor="deposit-value">{copy.operationalPanel.depositsValue}</Label>
             <Input
               id="deposit-value"
               inputMode="decimal"
@@ -66,7 +74,7 @@ export function OperationalServicePanel({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="deposit-count">Deposit accounts</Label>
+            <Label htmlFor="deposit-count">{copy.operationalPanel.depositAccounts}</Label>
             <Input
               id="deposit-count"
               inputMode="numeric"
@@ -83,7 +91,7 @@ export function OperationalServicePanel({
         <div className="grid gap-3 md:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="administration-count">
-              Administration (annual) · accounts
+              {copy.operationalPanel.administrationAccounts}
             </Label>
             <Input
               id="administration-count"
@@ -97,7 +105,7 @@ export function OperationalServicePanel({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="onboarding-count">Complex onboarding · count</Label>
+            <Label htmlFor="onboarding-count">{copy.operationalPanel.onboardingCount}</Label>
             <Input
               id="onboarding-count"
               inputMode="numeric"
@@ -113,7 +121,7 @@ export function OperationalServicePanel({
 
         <div className="grid gap-3 md:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="cash-transfers">Cash transfers (annual) · count</Label>
+            <Label htmlFor="cash-transfers">{copy.operationalPanel.cashTransfersCount}</Label>
             <Input
               id="cash-transfers"
               inputMode="numeric"
@@ -126,7 +134,7 @@ export function OperationalServicePanel({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="pass-through">Pass-through expenses (USD)</Label>
+            <Label htmlFor="pass-through">{copy.operationalPanel.passThroughExpenses}</Label>
             <Input
               id="pass-through"
               inputMode="decimal"
@@ -144,13 +152,13 @@ export function OperationalServicePanel({
 
         <div className="grid gap-3 md:grid-cols-2">
           <div className="rounded-xl border border-border/40 bg-secondary px-4 py-3 text-secondary-foreground">
-            <div className="text-xs font-medium">Annual service fees</div>
+            <div className="text-xs font-medium">{copy.operationalPanel.annualServiceFees}</div>
             <div className="font-mono tabular-nums mt-1 text-xl">
               {formatUSD(annualServiceUSD)}
             </div>
           </div>
           <div className="rounded-xl border border-border/40 bg-secondary px-4 py-3 text-secondary-foreground">
-            <div className="text-xs font-medium">One-off + at cost</div>
+            <div className="text-xs font-medium">{copy.operationalPanel.oneOffAtCost}</div>
             <div className="font-mono tabular-nums mt-1 text-xl">
               {formatUSD(oneOffServiceUSD)}
             </div>

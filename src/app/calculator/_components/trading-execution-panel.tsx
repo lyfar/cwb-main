@@ -1,12 +1,15 @@
 "use client"
 
+import { usePathname } from "next/navigation"
 import { Plus, Trash } from "@phosphor-icons/react"
 
 import type { FeeScheduleItem } from "@/lib/fee-schedule"
+import { getCalculatorCopy } from "@/app/calculator/_lib/copy"
 import { formatUSD } from "@/app/calculator/_lib/format"
 import { panelShell } from "@/app/calculator/_lib/panel-shell"
 import type { TradeLine, SelectPayload } from "@/app/calculator/_types"
 import type { TradePeriod } from "@/app/calculator/_lib/scenario"
+import { getLocaleFromPathname } from "@/lib/locale"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -54,21 +57,25 @@ export function TradingExecutionPanel({
   updateTradeLine: (key: string, updater: (line: TradeLine) => TradeLine) => void
   onSelect: (payload: SelectPayload) => void
 }) {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCalculatorCopy(locale)
+
   return (
     <section className={panelShell}>
       <header>
-        <div className="text-sm font-medium">Trading & execution</div>
+        <div className="text-sm font-medium">{copy.tradingPanel.title}</div>
         <div className="text-muted-foreground mt-1 text-xs">
-          Add your trades to estimate transactional costs.
+          {copy.tradingPanel.description}
         </div>
       </header>
 
       <div className="mt-4 rounded-xl border border-border/40 px-4 py-3">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-xs">
-            <div className="font-medium">Trade list period</div>
+            <div className="font-medium">{copy.tradingPanel.tradeListPeriod}</div>
             <div className="text-muted-foreground mt-0.5 text-[11px]">
-              Used for annualised totals.
+              {copy.tradingPanel.tradeListPeriodHelp}
             </div>
           </div>
           <Select
@@ -76,232 +83,39 @@ export function TradingExecutionPanel({
             onValueChange={(value) => setTradePeriod(value as TradePeriod)}
           >
             <SelectTrigger className="w-full sm:w-44">
-              <SelectValue placeholder="Select period" />
+              <SelectValue placeholder={copy.tradingPanel.periodPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="one-time">One-time</SelectItem>
-              <SelectItem value="monthly">Monthly</SelectItem>
-              <SelectItem value="quarterly">Quarterly</SelectItem>
-              <SelectItem value="annual">Annual</SelectItem>
+              <SelectItem value="one-time">{copy.tradingPanel.periods["one-time"]}</SelectItem>
+              <SelectItem value="monthly">{copy.tradingPanel.periods.monthly}</SelectItem>
+              <SelectItem value="quarterly">{copy.tradingPanel.periods.quarterly}</SelectItem>
+              <SelectItem value="annual">{copy.tradingPanel.periods.annual}</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      <div className="mt-4 space-y-3 md:hidden">
-        {computations.length === 0 ? (
-          <div className="text-muted-foreground rounded-xl border border-border/40 px-4 py-6 text-center text-sm">
-            Add a trade line to start estimating.
-          </div>
-        ) : null}
-
-        {computations.map((row) => {
-          const rateLabel = row.rateLabel
-          return (
-            <div
-              key={row.line.key}
-              className="rounded-xl border border-border/40 p-4"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1 space-y-2">
-                  <div className="text-xs font-medium">Trade type</div>
-                  <Select
-                    value={row.line.itemId}
-                    onValueChange={(value) => {
-                      updateTradeLine(row.line.key, (line) => ({
-                        ...line,
-                        itemId: value,
-                      }))
-                      onSelect({ id: value })
-                    }}
-                  >
-                    <SelectTrigger className="w-full min-w-0">
-                      <SelectValue placeholder="Select trade type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {brokerageItems.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>
-                          {item.asset}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {rateLabel ? (
-                    <div className="text-muted-foreground text-[11px] leading-relaxed">
-                      {rateLabel}
-                      {row.minApplied ? " · min applied" : ""}
-                    </div>
-                  ) : null}
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeTradeLine(row.line.key)}
-                  aria-label="Remove trade line"
-                  className="shrink-0"
-                >
-                  <Trash className="size-4" />
-                </Button>
-              </div>
-
-              <div className="mt-4 grid gap-3">
-                {row.isContract ? (
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <div className="text-xs font-medium">Contract type</div>
-                      <Select
-                        value={row.line.contractType}
-                        onValueChange={(value) => {
-                          if (value === "options" || value === "futures") {
-                            updateTradeLine(row.line.key, (line) => ({
-                              ...line,
-                              contractType: value,
-                            }))
-                          }
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Contract type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="options">Options</SelectItem>
-                          <SelectItem value="futures">Futures</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="text-xs font-medium">
-                        Contracts per trade
-                      </div>
-                      <Input
-                        inputMode="numeric"
-                        type="number"
-                        min={0}
-                        step="1"
-                        value={row.line.contractsInput}
-                        onChange={(event) =>
-                          updateTradeLine(row.line.key, (line) => ({
-                            ...line,
-                            contractsInput: event.target.value,
-                          }))
-                        }
-                        className="font-mono tabular-nums"
-                        aria-label="Contracts per trade"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <div className="text-xs font-medium">Trade value (USD)</div>
-                      <Input
-                        inputMode="decimal"
-                        type="number"
-                        min={0}
-                        step="any"
-                        value={row.line.amountInput}
-                        onChange={(event) =>
-                          updateTradeLine(row.line.key, (line) => ({
-                            ...line,
-                            amountInput: event.target.value,
-                          }))
-                        }
-                        className="font-mono tabular-nums"
-                        aria-label="Trade value (USD)"
-                      />
-                    </div>
-                    {row.isRange ? (
-                      <div className="space-y-2">
-                        <div className="text-xs font-medium">Rate override</div>
-                        <div className="flex items-center gap-2">
-                          <Input
-                            inputMode="decimal"
-                            type="number"
-                            min={0}
-                            step="any"
-                            placeholder="Rate %"
-                            value={row.line.rateOverrideInput}
-                            onChange={(event) =>
-                              updateTradeLine(row.line.key, (line) => ({
-                                ...line,
-                                rateOverrideInput: event.target.value,
-                              }))
-                            }
-                            className="font-mono tabular-nums"
-                            aria-label="Override rate percent"
-                          />
-                          <div className="text-muted-foreground text-xs">%</div>
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <div className="text-xs font-medium">Trades</div>
-                  <Input
-                    inputMode="numeric"
-                    type="number"
-                    min={0}
-                    step="1"
-                    value={row.line.countInput}
-                    onChange={(event) =>
-                      updateTradeLine(row.line.key, (line) => ({
-                        ...line,
-                        countInput: event.target.value,
-                      }))
-                    }
-                    className="font-mono tabular-nums"
-                    aria-label="Number of trades"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-border/40 bg-secondary/20 px-3 py-2">
-                  <div className="text-[11px] font-medium">Fee / trade</div>
-                  <div className="mt-1 font-mono tabular-nums text-xs">
-                    {formatUSD(row.perTradeUSD)}
-                  </div>
-                </div>
-                <div className="rounded-xl border border-border/40 bg-secondary/20 px-3 py-2">
-                  <div className="text-[11px] font-medium">Total</div>
-                  <div className="mt-1 font-mono tabular-nums text-xs">
-                    {formatUSD(row.totalUSD)}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
-        })}
-
-        <Button variant="outline" className="w-full" onClick={addTradeLine}>
-          <Plus className="size-4" />
-          Add line
-        </Button>
-      </div>
-
-      <div className="mt-4 hidden overflow-hidden rounded-xl border border-border/40 md:block">
+      <div className="mt-4 overflow-hidden rounded-xl border border-border/40">
         <Table className="min-w-[760px] w-full border-separate border-spacing-0 sm:min-w-[880px]">
           <TableHeader>
             <TableRow className="bg-secondary/30 hover:bg-secondary/30">
               <TableHead className="border-border/40 border-b border-r px-3 py-2 text-xs min-w-[220px] w-[220px] sm:min-w-[260px] sm:w-[260px]">
-                Trade type
+                {copy.tradingPanel.table.tradeType}
               </TableHead>
               <TableHead className="border-border/40 border-b border-r px-3 py-2 text-xs min-w-[160px] w-[160px] sm:min-w-[200px] sm:w-[200px]">
-                Value / contracts
+                {copy.tradingPanel.table.valueContracts}
               </TableHead>
               <TableHead className="border-border/40 border-b border-r px-3 py-2 text-xs text-right min-w-[80px] w-[80px] sm:min-w-[96px] sm:w-[96px]">
-                Trades
+                {copy.tradingPanel.table.trades}
               </TableHead>
               <TableHead className="border-border/40 border-b border-r px-3 py-2 text-xs text-right min-w-[110px] w-[110px] sm:min-w-[132px] sm:w-[132px]">
-                Fee / trade
+                {copy.tradingPanel.table.feePerTrade}
               </TableHead>
               <TableHead className="border-border/40 border-b border-r px-3 py-2 text-xs text-right min-w-[120px] w-[120px] sm:min-w-[140px] sm:w-[140px]">
-                Total
+                {copy.tradingPanel.table.total}
               </TableHead>
               <TableHead className="border-border/40 border-b px-3 py-2 text-xs text-right min-w-[44px] w-[44px] sm:min-w-[52px] sm:w-[52px]">
-                <span className="sr-only">Actions</span>
+                <span className="sr-only">{copy.tradingPanel.table.actions}</span>
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -322,7 +136,9 @@ export function TradingExecutionPanel({
                       }}
                     >
                       <SelectTrigger className="w-full min-w-0">
-                        <SelectValue placeholder="Select trade type" />
+                        <SelectValue
+                          placeholder={copy.tradingPanel.selectTradeTypePlaceholder}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {brokerageItems.map((item) => (
@@ -335,7 +151,7 @@ export function TradingExecutionPanel({
                     {rateLabel ? (
                       <div className="text-muted-foreground mt-2 text-[11px] leading-relaxed">
                         {rateLabel}
-                        {row.minApplied ? " · min applied" : ""}
+                        {row.minApplied ? ` · ${copy.tradingPanel.minApplied}` : ""}
                       </div>
                     ) : null}
                   </TableCell>
@@ -355,11 +171,13 @@ export function TradingExecutionPanel({
                           }}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Contract type" />
+                            <SelectValue
+                              placeholder={copy.tradingPanel.contractTypePlaceholder}
+                            />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="options">Options</SelectItem>
-                            <SelectItem value="futures">Futures</SelectItem>
+                            <SelectItem value="options">{copy.tradingPanel.options}</SelectItem>
+                            <SelectItem value="futures">{copy.tradingPanel.futures}</SelectItem>
                           </SelectContent>
                         </Select>
                         <Input
@@ -375,7 +193,7 @@ export function TradingExecutionPanel({
                             }))
                           }
                           className="font-mono tabular-nums"
-                          aria-label="Contracts per trade"
+                          aria-label={copy.tradingPanel.contractsPerTrade}
                         />
                       </div>
                     ) : (
@@ -393,7 +211,7 @@ export function TradingExecutionPanel({
                             }))
                           }
                           className="font-mono tabular-nums"
-                          aria-label="Trade value (USD)"
+                          aria-label={copy.tradingPanel.tradeValueUsd}
                         />
                         {row.isRange ? (
                           <div className="flex items-center gap-2">
@@ -411,7 +229,7 @@ export function TradingExecutionPanel({
                                 }))
                               }
                               className="font-mono tabular-nums"
-                              aria-label="Override rate percent"
+                              aria-label={copy.tradingPanel.overrideRatePercentAria}
                             />
                             <div className="text-muted-foreground text-xs">%</div>
                           </div>
@@ -434,7 +252,7 @@ export function TradingExecutionPanel({
                         }))
                       }
                       className="font-mono tabular-nums text-right"
-                      aria-label="Number of trades"
+                      aria-label={copy.tradingPanel.numberOfTradesAria}
                     />
                   </TableCell>
 
@@ -451,7 +269,7 @@ export function TradingExecutionPanel({
                       variant="ghost"
                       size="icon"
                       onClick={() => removeTradeLine(row.line.key)}
-                      aria-label="Remove trade line"
+                      aria-label={copy.tradingPanel.removeLineAria}
                     >
                       <Trash className="size-4" />
                     </Button>
@@ -466,7 +284,7 @@ export function TradingExecutionPanel({
                   colSpan={6}
                   className="text-muted-foreground px-3 py-6 text-center text-sm"
                 >
-                  Add a trade line to start estimating.
+                  {copy.tradingPanel.table.empty}
                 </TableCell>
               </TableRow>
             ) : null}
@@ -478,7 +296,7 @@ export function TradingExecutionPanel({
               <TableCell colSpan={6} className="border-border/40 px-3 py-3 text-xs">
                 <div className="flex items-center gap-2">
                   <Plus className="size-4" />
-                  <span className="font-medium">Add line</span>
+                  <span className="font-medium">{copy.tradingPanel.table.addLine}</span>
                 </div>
               </TableCell>
             </TableRow>
@@ -487,7 +305,7 @@ export function TradingExecutionPanel({
       </div>
 
       <div className="mt-4 rounded-xl border border-border/40 bg-secondary px-4 py-3 text-secondary-foreground">
-        <div className="text-xs font-medium">Trading total</div>
+        <div className="text-xs font-medium">{copy.tradingPanel.tradingTotal}</div>
         <div className="font-mono tabular-nums mt-1 text-xl">
           {formatUSD(tradingTotalUSD)}
         </div>

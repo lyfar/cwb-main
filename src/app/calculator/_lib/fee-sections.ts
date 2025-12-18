@@ -1,4 +1,5 @@
 import { feeSchedule, type FeeScheduleItem } from "@/lib/fee-schedule"
+import type { Locale } from "@/lib/locale"
 
 export type FeeSectionId =
   | "annual-management"
@@ -15,6 +16,12 @@ const managementLabelById: Record<string, string> = {
   "discretionary-mandate": "Discretionary mandate",
   custodian: "Custodian fees",
   advisory: "Advisory fees",
+}
+
+const managementLabelByIdRu: Record<string, string> = {
+  "discretionary-mandate": "Дискреционный мандат",
+  custodian: "Кастодиальные комиссии",
+  advisory: "Консультационные комиссии",
 }
 
 export const feeSections: Array<{
@@ -100,6 +107,7 @@ export function getFeeItemDisplayLabel(item: FeeScheduleItem) {
   }
 }
 
-export function getManagementServiceLabel(itemId: string) {
-  return managementLabelById[itemId] ?? itemId
+export function getManagementServiceLabel(itemId: string, locale: Locale = "en") {
+  const table = locale === "ru" ? managementLabelByIdRu : managementLabelById
+  return table[itemId] ?? itemId
 }

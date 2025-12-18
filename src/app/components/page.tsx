@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import { componentDemos } from "./_demos"
 import type { ComponentDemo } from "./_demos/types"
@@ -15,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { getLocaleFromPathname, localizeHref } from "@/lib/locale"
 
 function DemoCard({ demo }: { demo: ComponentDemo }) {
   return (
@@ -32,6 +34,8 @@ function DemoCard({ demo }: { demo: ComponentDemo }) {
 
 export default function ComponentsPage() {
   const [query, setQuery] = React.useState("")
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -79,7 +83,7 @@ export default function ComponentsPage() {
             </div>
             <div className="text-muted-foreground text-xs">
               <Link
-                href="/"
+                href={localizeHref("/", locale)}
                 className="hover:text-foreground underline underline-offset-4"
               >
                 Home

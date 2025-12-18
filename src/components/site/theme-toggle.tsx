@@ -3,7 +3,10 @@
 import * as React from "react"
 import { useTheme } from "next-themes"
 import { Moon, Sun } from "@phosphor-icons/react"
+import { usePathname } from "next/navigation"
 
+import { getCopy } from "@/lib/copy"
+import { getLocaleFromPathname } from "@/lib/locale"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -28,6 +31,9 @@ export function ThemeToggle({
 }) {
   const { theme, setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const copy = getCopy(locale)
 
   React.useEffect(() => {
     setMounted(true)
@@ -45,20 +51,20 @@ export function ThemeToggle({
           variant={variant}
           size={size}
           className={cn(showLabel && "gap-2", className)}
-          aria-label="Theme"
+          aria-label={copy.toggles.theme}
         >
           <Icon className={iconClassName} />
-          {showLabel ? <span>Theme</span> : null}
+          {showLabel ? <span>{copy.toggles.theme}</span> : null}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={align}>
         <DropdownMenuItem onSelect={() => setTheme("light")}>
           <Sun className="size-4" />
-          Light
+          {copy.toggles.light}
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => setTheme("dark")}>
           <Moon className="size-4" />
-          Dark
+          {copy.toggles.dark}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

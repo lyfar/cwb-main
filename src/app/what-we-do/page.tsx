@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import {
   ArrowsLeftRight,
+  Bank,
   ChartLineUp,
   Coins,
   ShieldCheck,
@@ -24,7 +25,7 @@ import { Separator } from "@/components/ui/separator"
 export const metadata: Metadata = {
   title: "What we do | CWB Hong Kong",
   description:
-    "Safe custody, asset management, brokerage access, and robust risk management controls.",
+    "Safe custody, asset management, brokerage access, banking services, and robust risk management controls.",
 }
 
 const SERVICE_ICONS = {
@@ -32,6 +33,7 @@ const SERVICE_ICONS = {
   "safe-custody": Vault,
   "asset-management": ChartLineUp,
   brokerage: ArrowsLeftRight,
+  "banking-services": Bank,
 } as const
 
 export default function WhatWeDoPage() {

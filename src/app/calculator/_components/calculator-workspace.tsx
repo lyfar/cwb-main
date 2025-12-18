@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 
 import {
   computeFee,
@@ -27,8 +28,9 @@ import {
   periodMultiplier,
   type TradePeriod,
 } from "@/app/calculator/_lib/scenario"
+import { getManagementServiceLabel } from "@/app/calculator/_lib/fee-sections"
 import type { SelectPayload, TradeLine } from "@/app/calculator/_types"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { getLocaleFromPathname } from "@/lib/locale"
 
 const MANAGEMENT_IDS = [
   "discretionary-mandate",
@@ -65,6 +67,8 @@ function getBrokerageItems() {
 }
 
 export function CalculatorWorkspace() {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
   const brokerageItems = React.useMemo(() => getBrokerageItems(), [])
   const [selectedId, setSelectedId] = React.useState(feeSchedule[0]?.id ?? "")
 
@@ -146,21 +150,21 @@ export function CalculatorWorkspace() {
     () => [
       {
         id: "discretionary-mandate" as const,
-        label: "Discretionary mandate",
+        label: getManagementServiceLabel("discretionary-mandate", locale),
         included: includeMandate,
         setIncluded: setIncludeMandate,
         perQuarterUSD: managementFeeById["discretionary-mandate"],
       },
       {
         id: "custodian" as const,
-        label: "Custodian fees",
+        label: getManagementServiceLabel("custodian", locale),
         included: includeCustodian,
         setIncluded: setIncludeCustodian,
         perQuarterUSD: managementFeeById.custodian,
       },
       {
         id: "advisory" as const,
-        label: "Advisory fees",
+        label: getManagementServiceLabel("advisory", locale),
         included: includeAdvisory,
         setIncluded: setIncludeAdvisory,
         perQuarterUSD: managementFeeById.advisory,
@@ -170,6 +174,7 @@ export function CalculatorWorkspace() {
       includeAdvisory,
       includeCustodian,
       includeMandate,
+      locale,
       managementFeeById,
       setIncludeAdvisory,
       setIncludeCustodian,
@@ -287,7 +292,7 @@ export function CalculatorWorkspace() {
 
   return (
     <div className="space-y-12">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
         <AnnualManagementFeesTable selectedId={selectedId} onSelect={handleSelect} />
         <ManagementFeesPanel
           portfolioValueInput={portfolioValueInput}
@@ -300,7 +305,7 @@ export function CalculatorWorkspace() {
         />
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
         <TradingExecutionCostsTable selectedId={selectedId} onSelect={handleSelect} />
         <TradingExecutionPanel
           brokerageItems={brokerageItems}
@@ -316,74 +321,34 @@ export function CalculatorWorkspace() {
         />
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
         <OperationalServiceFeesTable selectedId={selectedId} onSelect={handleSelect} />
-        <div>
-          <div className="lg:hidden">
-            <Tabs defaultValue="settings" className="w-full">
-              <TabsList className="w-full">
-                <TabsTrigger value="settings">Settings</TabsTrigger>
-                <TabsTrigger value="summary">Summary</TabsTrigger>
-              </TabsList>
-              <TabsContent value="settings" className="mt-4">
-                <OperationalServicePanel
-                  depositValueInput={depositValueInput}
-                  setDepositValueInput={setDepositValueInput}
-                  depositCountInput={depositCountInput}
-                  setDepositCountInput={setDepositCountInput}
-                  administrationCountInput={administrationCountInput}
-                  setAdministrationCountInput={setAdministrationCountInput}
-                  onboardingCountInput={onboardingCountInput}
-                  setOnboardingCountInput={setOnboardingCountInput}
-                  cashTransfersCountInput={cashTransfersCountInput}
-                  setCashTransfersCountInput={setCashTransfersCountInput}
-                  passThroughCostInput={passThroughCostInput}
-                  setPassThroughCostInput={setPassThroughCostInput}
-                  annualServiceUSD={annualServiceUSD}
-                  oneOffServiceUSD={oneOffServiceUSD}
-                />
-              </TabsContent>
-              <TabsContent value="summary" className="mt-4">
-                <ScenarioSummaryPanel
-                  quarterlyRecurringUSD={quarterlyRecurringUSD}
-                  annualRecurringUSD={annualRecurringUSD}
-                  annualServiceUSD={annualServiceUSD}
-                  transactionalTotalUSD={transactionalTotalUSD}
-                  annualisedTransactionUSD={annualisedTransactionUSD}
-                  oneOffServiceUSD={oneOffServiceUSD}
-                  tradePeriod={tradePeriod}
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
-
-          <div className="hidden space-y-8 lg:block">
-            <OperationalServicePanel
-              depositValueInput={depositValueInput}
-              setDepositValueInput={setDepositValueInput}
-              depositCountInput={depositCountInput}
-              setDepositCountInput={setDepositCountInput}
-              administrationCountInput={administrationCountInput}
-              setAdministrationCountInput={setAdministrationCountInput}
-              onboardingCountInput={onboardingCountInput}
-              setOnboardingCountInput={setOnboardingCountInput}
-              cashTransfersCountInput={cashTransfersCountInput}
-              setCashTransfersCountInput={setCashTransfersCountInput}
-              passThroughCostInput={passThroughCostInput}
-              setPassThroughCostInput={setPassThroughCostInput}
-              annualServiceUSD={annualServiceUSD}
-              oneOffServiceUSD={oneOffServiceUSD}
-            />
-            <ScenarioSummaryPanel
-              quarterlyRecurringUSD={quarterlyRecurringUSD}
-              annualRecurringUSD={annualRecurringUSD}
-              annualServiceUSD={annualServiceUSD}
-              transactionalTotalUSD={transactionalTotalUSD}
-              annualisedTransactionUSD={annualisedTransactionUSD}
-              oneOffServiceUSD={oneOffServiceUSD}
-              tradePeriod={tradePeriod}
-            />
-          </div>
+        <div className="space-y-8">
+          <OperationalServicePanel
+            depositValueInput={depositValueInput}
+            setDepositValueInput={setDepositValueInput}
+            depositCountInput={depositCountInput}
+            setDepositCountInput={setDepositCountInput}
+            administrationCountInput={administrationCountInput}
+            setAdministrationCountInput={setAdministrationCountInput}
+            onboardingCountInput={onboardingCountInput}
+            setOnboardingCountInput={setOnboardingCountInput}
+            cashTransfersCountInput={cashTransfersCountInput}
+            setCashTransfersCountInput={setCashTransfersCountInput}
+            passThroughCostInput={passThroughCostInput}
+            setPassThroughCostInput={setPassThroughCostInput}
+            annualServiceUSD={annualServiceUSD}
+            oneOffServiceUSD={oneOffServiceUSD}
+          />
+          <ScenarioSummaryPanel
+            quarterlyRecurringUSD={quarterlyRecurringUSD}
+            annualRecurringUSD={annualRecurringUSD}
+            annualServiceUSD={annualServiceUSD}
+            transactionalTotalUSD={transactionalTotalUSD}
+            annualisedTransactionUSD={annualisedTransactionUSD}
+            oneOffServiceUSD={oneOffServiceUSD}
+            tradePeriod={tradePeriod}
+          />
         </div>
       </div>
     </div>
