@@ -285,10 +285,34 @@
   display: none;
 }
 
+html.calculator-printing [data-calculator-report] {
+  display: block;
+}
+
+html.calculator-printing [data-site-header],
+html.calculator-printing [data-site-footer],
+html.calculator-printing [data-calculator-app] {
+  display: none !important;
+}
+
+html.calculator-printing main[data-calculator-page] {
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+html.calculator-printing main[data-calculator-page] [data-calculator-content] {
+  margin-top: 0 !important;
+}
+
+html.calculator-printing body {
+  background-image: none !important;
+  background-attachment: initial !important;
+}
+
 @media print {
   @page {
     size: A4 landscape;
-    margin: 12mm;
+    margin: 18mm 14mm;
   }
 
   body {
@@ -315,6 +339,21 @@
 
   [data-calculator-report] {
     display: block !important;
+  }
+
+  [data-calculator-report] .pdf-page {
+    break-after: page;
+    page-break-after: always;
+  }
+
+  [data-calculator-report] .pdf-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  [data-calculator-report] .pdf-avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .print-break-after-page {

@@ -400,7 +400,7 @@ export function CalculatorWorkspace() {
   )
 }
 
-export const CalculatorWorkspaceWithRef = React.forwardRef<CalculatorWorkspaceHandle, {}>(
+export const CalculatorWorkspaceWithRef = React.forwardRef<CalculatorWorkspaceHandle, object>(
   function CalculatorWorkspaceWithRef(_props, ref) {
     const pathname = usePathname()
     const locale = getLocaleFromPathname(pathname)
@@ -409,6 +409,7 @@ export const CalculatorWorkspaceWithRef = React.forwardRef<CalculatorWorkspaceHa
       ref,
       () => ({
         exportPdf() {
+          const root = document.documentElement
           const previousTitle = document.title
           const dateStamp = new Date().toISOString().slice(0, 10)
           document.title =
@@ -416,9 +417,20 @@ export const CalculatorWorkspaceWithRef = React.forwardRef<CalculatorWorkspaceHa
               ? `CWB — Оценка комиссий — ${dateStamp}`
               : `CWB — Fee estimate — ${dateStamp}`
 
+          const cleanup = () => {
+            root.classList.remove("calculator-printing")
+            document.title = previousTitle
+          }
+
+          root.classList.add("calculator-printing")
+          window.addEventListener("afterprint", cleanup, { once: true })
           window.scrollTo(0, 0)
-          window.print()
-          document.title = previousTitle
+
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              window.print()
+            })
+          })
         },
       }),
       [locale]

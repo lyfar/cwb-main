@@ -42,10 +42,43 @@ function ReportCard({
   children: ReactNode
 }) {
   return (
-    <section className="rounded-2xl border border-border/40 bg-card/60 p-6">
+    <section className="pdf-avoid-break rounded-2xl border border-border/40 bg-card p-6">
       <h2 className="font-serif text-2xl leading-tight tracking-tight">{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
+  )
+}
+
+function StatList({ children }: { children: ReactNode }) {
+  return (
+    <div className="divide-border/30 overflow-hidden rounded-xl border border-border/30 divide-y">
+      {children}
+    </div>
+  )
+}
+
+function StatRow({
+  label,
+  value,
+  strong,
+}: {
+  label: ReactNode
+  value: ReactNode
+  strong?: boolean
+}) {
+  return (
+    <div className="flex items-start justify-between gap-6 px-4 py-3">
+      <div className="text-xs leading-relaxed">{label}</div>
+      <div
+        className={
+          strong
+            ? "w-44 shrink-0 text-right font-mono tabular-nums text-xs font-semibold"
+            : "w-44 shrink-0 text-right font-mono tabular-nums text-xs"
+        }
+      >
+        {value}
+      </div>
+    </div>
   )
 }
 
@@ -110,152 +143,238 @@ export function CalculatorPdfReport({
 
   const tieringEnabled = tieringMode === "progressive"
 
+  const reportMeta = (
+    <div className="text-muted-foreground flex items-center justify-between text-xs">
+      <div>
+        {locale === "ru"
+          ? "CWB Hong Kong · Оценка комиссий"
+          : "CWB Hong Kong · Fee estimate"}
+      </div>
+      <div className="font-mono tabular-nums">{formatDate(locale, generatedAt)}</div>
+    </div>
+  )
+
   return (
-    <div className="space-y-10">
-      <header className="flex items-start justify-between gap-8">
-        <div>
-          <div className="font-serif text-3xl font-semibold tracking-tight">
-            CWB
+    <div className="pdf-document">
+      <div className="pdf-page space-y-5">
+        {reportMeta}
+
+        <header className="flex items-start justify-between gap-8">
+          <div>
+            <div className="font-serif text-3xl font-semibold tracking-tight">
+              CWB
+            </div>
+            <div className="text-muted-foreground mt-1 text-sm">
+              {locale === "ru"
+                ? "Хранение активов и управление инвестициями"
+                : "Custody & investment management"}
+            </div>
           </div>
-          <div className="text-muted-foreground mt-1 text-sm">
-            {locale === "ru"
-              ? "Хранение активов и управление инвестициями"
-              : "Custody & investment management"}
+          <div className="text-right">
+            <div className="text-muted-foreground text-xs">
+              {locale === "ru" ? "Валюта" : "Currency"}
+            </div>
+            <div className="font-mono text-sm">USD</div>
           </div>
+        </header>
+
+        <section className="rounded-2xl border border-border/40 bg-secondary/20 p-6">
+          <h1 className="font-serif text-5xl leading-[1.02] tracking-tight">
+            {reportTitle}
+          </h1>
+          <p className="text-muted-foreground mt-4 max-w-3xl text-sm leading-relaxed">
+            {reportSubtitle}
+          </p>
+        </section>
+
+        <div className="grid gap-5 lg:grid-cols-2">
+          <ReportCard title={copy.summaryPanel.title}>
+            <StatList>
+              <StatRow
+                label={copy.summaryPanel.quarterlyRecurring}
+                value={formatUSD(quarterlyRecurringUSD)}
+              />
+              <StatRow
+                label={copy.summaryPanel.annualRecurring}
+                value={formatUSD(annualRecurringUSD + annualServiceUSD)}
+              />
+              <StatRow
+                label={copy.summaryPanel.transactionalTotal}
+                value={formatUSD(transactionalTotalUSD)}
+              />
+              {annualisedTransactionUSD != null ? (
+                <StatRow
+                  label={copy.summaryPanel.annualisedTransactional(
+                    copy.tradingPanel.periods[tradePeriod] ?? tradePeriod
+                  )}
+                  value={formatUSD(annualisedTransactionUSD)}
+                />
+              ) : null}
+              <StatRow
+                label={copy.summaryPanel.oneOffAtCost}
+                value={formatUSD(oneOffServiceUSD)}
+              />
+              <div className="bg-secondary/25">
+                <StatRow
+                  label={copy.summaryPanel.annualisedAllIn}
+                  value={formatUSD(annualisedAllInUSD)}
+                  strong
+                />
+              </div>
+            </StatList>
+
+            <div className="text-muted-foreground mt-4 text-xs leading-relaxed">
+              {copy.summaryPanel.footerNote}
+            </div>
+          </ReportCard>
+
+          <ReportCard title={locale === "ru" ? "Параметры" : "Inputs"}>
+            <StatList>
+              <StatRow
+                label={copy.managementPanel.portfolioValue}
+                value={formatUSD(portfolioValueUSD)}
+              />
+              <StatRow
+                label={copy.managementPanel.blendedTitle}
+                value={formatOnOff(locale, tieringEnabled)}
+              />
+              <StatRow
+                label={copy.tradingPanel.tradeListPeriod}
+                value={copy.tradingPanel.periods[tradePeriod] ?? tradePeriod}
+              />
+              <StatRow
+                label={
+                  locale === "ru"
+                    ? "Денежные переводы (кол-во)"
+                    : "Cash transfers (count)"
+                }
+                value={Math.max(0, cashTransfersCount).toLocaleString("en-US")}
+              />
+            </StatList>
+          </ReportCard>
         </div>
-        <div className="text-right">
-          <div className="text-muted-foreground text-xs">
-            {locale === "ru" ? "Дата" : "Date"}
-          </div>
-          <div className="font-mono tabular-nums text-sm">
-            {formatDate(locale, generatedAt)}
-          </div>
-          <div className="text-muted-foreground mt-3 text-xs">
-            {locale === "ru" ? "Валюта" : "Currency"}
-          </div>
-          <div className="font-mono text-sm">USD</div>
-        </div>
-      </header>
+      </div>
 
-      <section className="rounded-2xl border border-border/40 bg-secondary/20 p-8">
-        <h1 className="font-serif text-5xl leading-[1.02] tracking-tight">
-          {reportTitle}
-        </h1>
-        <p className="text-muted-foreground mt-4 max-w-3xl text-sm leading-relaxed">
-          {reportSubtitle}
-        </p>
-      </section>
+      <div className="pdf-page space-y-5">
+        {reportMeta}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <ReportCard title={copy.managementPanel.title}>
-          <Table className="w-full table-fixed border-separate border-spacing-0">
-            <TableBody>
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {copy.managementPanel.portfolioValue}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {formatUSD(portfolioValueUSD)}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {copy.managementPanel.blendedTitle}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {formatOnOff(locale, tieringEnabled)}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+        <div className="grid gap-5 lg:grid-cols-2">
+          <ReportCard title={copy.managementPanel.title}>
+            <StatList>
+              <StatRow
+                label={copy.managementPanel.portfolioValue}
+                value={formatUSD(portfolioValueUSD)}
+              />
+              <StatRow
+                label={copy.managementPanel.blendedTitle}
+                value={formatOnOff(locale, tieringEnabled)}
+              />
+            </StatList>
 
-          <div className="mt-4 overflow-hidden rounded-xl border border-border/30">
-            <Table className="w-full table-fixed border-separate border-spacing-0">
-              <TableBody>
+            <div className="mt-4">
+              <div className="text-muted-foreground text-xs">
+                {locale === "ru" ? "Выбранные сервисы" : "Selected services"}
+              </div>
+              <div className="mt-2 divide-border/30 overflow-hidden rounded-xl border border-border/30 divide-y">
                 {managementRows.map((row) => (
-                  <TableRow key={row.label}>
-                    <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs whitespace-normal">
-                      {row.label}
-                    </TableCell>
-                    <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs text-right font-mono tabular-nums w-40">
-                      {formatUSD(row.included ? row.perQuarterUSD : 0)}
-                    </TableCell>
-                    <TableCell className="border-border/30 border-b px-4 py-3 text-xs text-right w-28">
-                      {row.included
-                        ? locale === "ru"
-                          ? "Включено"
-                          : "Included"
-                        : locale === "ru"
-                          ? "Исключено"
-                          : "Excluded"}
-                    </TableCell>
-                  </TableRow>
+                  <div
+                    key={row.label}
+                    className="flex items-start justify-between gap-6 px-4 py-3"
+                  >
+                    <div className="text-xs leading-relaxed">{row.label}</div>
+                    <div className="w-44 shrink-0 text-right">
+                      <div className="font-mono tabular-nums text-xs">
+                        {formatUSD(row.included ? row.perQuarterUSD : 0)}
+                      </div>
+                      <div className="text-muted-foreground text-[10px]">
+                        {row.included
+                          ? locale === "ru"
+                            ? "Включено"
+                            : "Included"
+                          : locale === "ru"
+                            ? "Исключено"
+                            : "Excluded"}
+                      </div>
+                    </div>
+                  </div>
                 ))}
-                <TableRow className="bg-secondary/25">
-                  <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs font-medium">
-                    {copy.managementPanel.quarterlyRecurring}
-                  </TableCell>
-                  <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs text-right font-mono tabular-nums font-semibold">
-                    {formatUSD(quarterlyRecurringUSD)}
-                  </TableCell>
-                  <TableCell className="border-border/30 border-b px-4 py-3 text-xs text-right">
-                    {copy.managementPanel.perQuarter}
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-secondary/15">
-                  <TableCell className="border-border/30 border-r px-4 py-3 text-xs font-medium">
-                    {copy.managementPanel.annualisedRecurring}
-                  </TableCell>
-                  <TableCell className="border-border/30 border-r px-4 py-3 text-xs text-right font-mono tabular-nums font-semibold">
-                    {formatUSD(annualRecurringUSD)}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-xs text-right">
-                    {locale === "ru" ? "в год" : "per year"}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </div>
-        </ReportCard>
+                <div className="bg-secondary/25">
+                  <StatRow
+                    label={copy.managementPanel.quarterlyRecurring}
+                    value={formatUSD(quarterlyRecurringUSD)}
+                    strong
+                  />
+                </div>
+                <div className="bg-secondary/15">
+                  <StatRow
+                    label={copy.managementPanel.annualisedRecurring}
+                    value={formatUSD(annualRecurringUSD)}
+                    strong
+                  />
+                </div>
+              </div>
+            </div>
+          </ReportCard>
+
+          <ReportCard title={copy.operationalPanel.title}>
+            <StatList>
+              <StatRow
+                label={copy.operationalPanel.depositsValue}
+                value={formatUSD(depositValueUSD)}
+              />
+              <StatRow
+                label={copy.operationalPanel.depositAccounts}
+                value={depositCount.toLocaleString("en-US")}
+              />
+              <StatRow
+                label={copy.operationalPanel.administrationAccounts}
+                value={administrationCount.toLocaleString("en-US")}
+              />
+              <StatRow
+                label={copy.operationalPanel.onboardingCount}
+                value={onboardingCount.toLocaleString("en-US")}
+              />
+              <StatRow
+                label={copy.operationalPanel.passThroughExpenses}
+                value={formatUSD(passThroughCostUSD)}
+              />
+              <div className="bg-secondary/20">
+                <StatRow
+                  label={copy.operationalPanel.annualServiceFees}
+                  value={formatUSD(annualServiceUSD)}
+                  strong
+                />
+              </div>
+              <div className="bg-secondary/15">
+                <StatRow
+                  label={copy.operationalPanel.oneOffAtCost}
+                  value={formatUSD(oneOffServiceUSD)}
+                  strong
+                />
+              </div>
+            </StatList>
+          </ReportCard>
+        </div>
 
         <ReportCard title={copy.tradingPanel.title}>
-          <Table className="w-full table-fixed border-separate border-spacing-0">
-            <TableBody>
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {copy.tradingPanel.tradeListPeriod}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {copy.tradingPanel.periods[tradePeriod] ?? tradePeriod}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {locale === "ru"
-                    ? "Денежные переводы (кол-во)"
-                    : "Cash transfers (count)"}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {Math.max(0, cashTransfersCount).toLocaleString("en-US")}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          <div className="text-muted-foreground text-xs">
+            {copy.tradingPanel.description}
+          </div>
 
           <div className="mt-4 overflow-hidden rounded-xl border border-border/30">
             <Table className="w-full border-separate border-spacing-0">
               <TableBody>
                 <TableRow className="bg-secondary/20">
-                  <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs font-medium">
+                  <TableCell className="border-border/30 border-b border-r px-4 py-2 text-[10px] font-medium">
                     {copy.tradingPanel.table.tradeType}
                   </TableCell>
-                  <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs text-right font-medium">
+                  <TableCell className="border-border/30 border-b border-r px-4 py-2 text-[10px] text-right font-medium w-24">
                     {copy.tradingPanel.table.trades}
                   </TableCell>
-                  <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs text-right font-medium">
+                  <TableCell className="border-border/30 border-b border-r px-4 py-2 text-[10px] text-right font-medium w-28">
                     {copy.tradingPanel.table.feePerTrade}
                   </TableCell>
-                  <TableCell className="border-border/30 border-b px-4 py-3 text-xs text-right font-medium">
+                  <TableCell className="border-border/30 border-b px-4 py-2 text-[10px] text-right font-medium w-28">
                     {copy.tradingPanel.table.total}
                   </TableCell>
                 </TableRow>
@@ -263,24 +382,24 @@ export function CalculatorPdfReport({
                 {tradeLineComputations.length > 0 ? (
                   tradeLineComputations.map((row) => (
                     <TableRow key={row.line.key}>
-                      <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs whitespace-normal">
+                      <TableCell className="border-border/30 border-b border-r px-4 py-2 text-[10px] whitespace-normal">
                         {row.item
                           ? formatTradeAssetLabel(row.item.asset, locale)
                           : "—"}
                         {row.rateLabel ? (
-                          <div className="text-muted-foreground mt-1 text-[11px] leading-relaxed">
+                          <div className="text-muted-foreground mt-1 text-[10px] leading-relaxed">
                             {row.rateLabel}
                             {row.minApplied ? ` · ${copy.tradingPanel.minApplied}` : ""}
                           </div>
                         ) : null}
                       </TableCell>
-                      <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs text-right font-mono tabular-nums">
+                      <TableCell className="border-border/30 border-b border-r px-4 py-2 text-[10px] text-right font-mono tabular-nums">
                         {Math.max(0, row.count).toLocaleString("en-US")}
                       </TableCell>
-                      <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs text-right font-mono tabular-nums">
+                      <TableCell className="border-border/30 border-b border-r px-4 py-2 text-[10px] text-right font-mono tabular-nums">
                         {formatUSD(row.perTradeUSD)}
                       </TableCell>
-                      <TableCell className="border-border/30 border-b px-4 py-3 text-xs text-right font-mono tabular-nums">
+                      <TableCell className="border-border/30 border-b px-4 py-2 text-[10px] text-right font-mono tabular-nums">
                         {formatUSD(row.totalUSD)}
                       </TableCell>
                     </TableRow>
@@ -297,48 +416,46 @@ export function CalculatorPdfReport({
                 )}
 
                 <TableRow className="bg-secondary/25">
-                  <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs font-medium">
+                  <TableCell className="border-border/30 border-r px-4 py-2 text-[10px] font-medium">
                     {copy.tradingPanel.tradingTotal}
                   </TableCell>
-                  <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs text-right font-mono tabular-nums font-semibold">
+                  <TableCell className="border-border/30 border-r px-4 py-2 text-[10px] text-right">
                     —
                   </TableCell>
-                  <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs text-right font-mono tabular-nums font-semibold">
+                  <TableCell className="border-border/30 border-r px-4 py-2 text-[10px] text-right">
                     —
                   </TableCell>
-                  <TableCell className="border-border/30 border-b px-4 py-3 text-xs text-right font-mono tabular-nums font-semibold">
+                  <TableCell className="px-4 py-2 text-[10px] text-right font-mono tabular-nums font-semibold">
                     {formatUSD(tradingTotalUSD)}
                   </TableCell>
                 </TableRow>
-
                 {annualisedTradingUSD != null ? (
                   <TableRow>
-                    <TableCell className="border-border/30 border-r px-4 py-3 text-xs font-medium">
+                    <TableCell className="border-border/30 border-r px-4 py-2 text-[10px] font-medium">
                       {locale === "ru" ? "Трейдинг (год)" : "Trading (annualised)"}
                     </TableCell>
-                    <TableCell className="border-border/30 border-r px-4 py-3 text-xs text-right font-mono tabular-nums">
+                    <TableCell className="border-border/30 border-r px-4 py-2 text-[10px] text-right">
                       —
                     </TableCell>
-                    <TableCell className="border-border/30 border-r px-4 py-3 text-xs text-right font-mono tabular-nums">
+                    <TableCell className="border-border/30 border-r px-4 py-2 text-[10px] text-right">
                       —
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-xs text-right font-mono tabular-nums">
+                    <TableCell className="px-4 py-2 text-[10px] text-right font-mono tabular-nums">
                       {formatUSD(annualisedTradingUSD)}
                     </TableCell>
                   </TableRow>
                 ) : null}
-
                 <TableRow>
-                  <TableCell className="border-border/30 border-r px-4 py-3 text-xs font-medium">
+                  <TableCell className="border-border/30 border-r px-4 py-2 text-[10px] font-medium">
                     {locale === "ru" ? "Переводы (итого)" : "Transfers (total)"}
                   </TableCell>
-                  <TableCell className="border-border/30 border-r px-4 py-3 text-xs text-right font-mono tabular-nums">
+                  <TableCell className="border-border/30 border-r px-4 py-2 text-[10px] text-right">
                     —
                   </TableCell>
-                  <TableCell className="border-border/30 border-r px-4 py-3 text-xs text-right font-mono tabular-nums">
+                  <TableCell className="border-border/30 border-r px-4 py-2 text-[10px] text-right">
                     —
                   </TableCell>
-                  <TableCell className="px-4 py-3 text-xs text-right font-mono tabular-nums">
+                  <TableCell className="px-4 py-2 text-[10px] text-right font-mono tabular-nums">
                     {formatUSD(cashTransferTotalUSD)}
                   </TableCell>
                 </TableRow>
@@ -348,141 +465,26 @@ export function CalculatorPdfReport({
         </ReportCard>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <ReportCard title={copy.operationalPanel.title}>
-          <Table className="w-full table-fixed border-separate border-spacing-0">
-            <TableBody>
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {copy.operationalPanel.depositsValue}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {formatUSD(depositValueUSD)}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {copy.operationalPanel.depositAccounts}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {depositCount.toLocaleString("en-US")}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {copy.operationalPanel.administrationAccounts}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {administrationCount.toLocaleString("en-US")}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {copy.operationalPanel.onboardingCount}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {onboardingCount.toLocaleString("en-US")}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {copy.operationalPanel.passThroughExpenses}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {formatUSD(passThroughCostUSD)}
-                </TableCell>
-              </TableRow>
-              <TableRow className="bg-secondary/20">
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs font-medium">
-                  {copy.operationalPanel.annualServiceFees}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums font-semibold w-44">
-                  {formatUSD(annualServiceUSD)}
-                </TableCell>
-              </TableRow>
-              <TableRow className="bg-secondary/15">
-                <TableCell className="border-border/30 border-r px-4 py-3 text-xs font-medium">
-                  {copy.operationalPanel.oneOffAtCost}
-                </TableCell>
-                <TableCell className="border-border/30 border-r px-4 py-3 text-right text-xs font-mono tabular-nums font-semibold w-44">
-                  {formatUSD(oneOffServiceUSD)}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </ReportCard>
-
-        <ReportCard title={copy.summaryPanel.title}>
-          <Table className="w-full table-fixed border-separate border-spacing-0">
-            <TableBody>
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {copy.summaryPanel.quarterlyRecurring}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {formatUSD(quarterlyRecurringUSD)}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {copy.summaryPanel.annualRecurring}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {formatUSD(annualRecurringUSD + annualServiceUSD)}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {copy.summaryPanel.transactionalTotal}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {formatUSD(transactionalTotalUSD)}
-                </TableCell>
-              </TableRow>
-              {annualisedTransactionUSD != null ? (
-                <TableRow>
-                  <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                    {copy.summaryPanel.annualisedTransactional(
-                      copy.tradingPanel.periods[tradePeriod] ?? tradePeriod
-                    )}
-                  </TableCell>
-                  <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                    {formatUSD(annualisedTransactionUSD)}
-                  </TableCell>
-                </TableRow>
-              ) : null}
-              <TableRow>
-                <TableCell className="border-border/30 border-b border-r px-4 py-3 text-xs">
-                  {copy.summaryPanel.oneOffAtCost}
-                </TableCell>
-                <TableCell className="border-border/30 border-b px-4 py-3 text-right text-xs font-mono tabular-nums w-44">
-                  {formatUSD(oneOffServiceUSD)}
-                </TableCell>
-              </TableRow>
-              <TableRow className="bg-secondary/25">
-                <TableCell className="border-border/30 border-r px-4 py-3 text-xs font-medium">
-                  {copy.summaryPanel.annualisedAllIn}
-                </TableCell>
-                <TableCell className="border-border/30 border-r px-4 py-3 text-right text-xs font-mono tabular-nums font-semibold w-44">
-                  {formatUSD(annualisedAllInUSD)}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-
-          <div className="text-muted-foreground mt-4 text-xs leading-relaxed">
-            {copy.summaryPanel.footerNote}
-          </div>
-        </ReportCard>
+      <div className="pdf-page space-y-4">
+        {reportMeta}
+        <div className="pdf-avoid-break">
+          <AnnualManagementFeesTable selectedId={selectedId} onSelect={() => {}} />
+        </div>
       </div>
 
-      <div className="print-break-after-page" />
+      <div className="pdf-page space-y-4">
+        {reportMeta}
+        <div className="pdf-avoid-break">
+          <TradingExecutionCostsTable selectedId={selectedId} onSelect={() => {}} />
+        </div>
+      </div>
 
-      <AnnualManagementFeesTable selectedId={selectedId} onSelect={() => {}} />
-      <div className="print-break-after-page" />
-      <TradingExecutionCostsTable selectedId={selectedId} onSelect={() => {}} />
-      <div className="print-break-after-page" />
-      <OperationalServiceFeesTable selectedId={selectedId} onSelect={() => {}} />
+      <div className="pdf-page space-y-4">
+        {reportMeta}
+        <div className="pdf-avoid-break">
+          <OperationalServiceFeesTable selectedId={selectedId} onSelect={() => {}} />
+        </div>
+      </div>
     </div>
   )
 }
